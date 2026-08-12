@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>blog_post_1_cybersecurity_lab.md</title>
+  <style>
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css");
+
+  body {
+    font-family: Georgia, Cambria, serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #373D49;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; }
+  h3 { font-size: 1.25em; }
+  a { color: #35D7BB; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    font-family: "Ubuntu Mono", Monaco, monospace;
+    background: #F5F7FA;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+  pre {
+    background: #F5F7FA;
+    padding: 1em;
+    border-radius: 3px;
+    overflow-x: auto;
+  }
+  .hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0;
+    color: #333;
+  }
+  pre code { background: none; padding: 0; }
+  blockquote {
+    border-left: 3px solid #A0AABF;
+    padding-left: 1em;
+    margin-left: 0;
+    font-style: italic;
+    color: #666;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #E8E8E8;
+    padding: 0.5em;
+    text-align: left;
+  }
+  th {
+    background: #F5F7FA;
+    font-weight: 600;
+  }
+  #preview .table {
+    width: auto;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+</style>
+</head>
+<body id="preview">
+<h1 class="code-line has-line-data" data-line-start="0" data-line-end="1"><a id="Setting_Up_Your_First_Cybersecurity_Home_Lab_The_Safe_Way_to_Learn_0"></a>Setting Up Your First Cybersecurity Home Lab: The Safe Way to Learn</h1>
+<blockquote>
+<p class="has-line-data" data-line-start="2" data-line-end="3"><strong>⚠️ EDUCATIONAL DISCLAIMER:</strong> This guide is for learning cybersecurity in a <strong>controlled, isolated environment only</strong>. Never practice attack techniques on systems you do not own or have explicit written permission to test. Unauthorized access to computer systems is illegal under the Computer Fraud and Abuse Act (US), the Computer Misuse Act (UK), and similar laws worldwide.</p>
+</blockquote>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="6" data-line-end="7"><a id="Why_You_Need_a_Lab_6"></a>Why You Need a Lab</h2>
+<p class="has-line-data" data-line-start="8" data-line-end="9">Reading about attacks is one thing. <strong>Seeing them happen</strong> in a safe environment is how real learning happens. A home lab lets you:</p>
+<ul>
+<li class="has-line-data" data-line-start="10" data-line-end="11">Practice reconnaissance, exploitation, and forensics <strong>without breaking laws</strong></li>
+<li class="has-line-data" data-line-start="11" data-line-end="12">Test detection rules and defensive tools before deploying them at work</li>
+<li class="has-line-data" data-line-start="12" data-line-end="13">Understand malware behavior by observing it in a sandbox</li>
+<li class="has-line-data" data-line-start="13" data-line-end="15">Prepare for certifications like CompTIA Security+, CEH, OSCP, or eJPT</li>
+</ul>
+<p class="has-line-data" data-line-start="15" data-line-end="16">Think of it as a flight simulator for cybersecurity. You can crash the plane here — safely.</p>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="19" data-line-end="20"><a id="What_Were_Building_Today_19"></a>What We’re Building Today</h2>
+<p class="has-line-data" data-line-start="21" data-line-end="22">By the end of this guide, you will have:</p>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VirtualBox</strong> (or VMware)</td>
+<td>Free hypervisor to run virtual machines</td>
+</tr>
+<tr>
+<td><strong>Kali Linux VM</strong></td>
+<td>Your attack/analysis machine (pre-loaded with 600+ tools)</td>
+</tr>
+<tr>
+<td><strong>Windows 10/11 VM</strong></td>
+<td>Your target/victim machine for testing</td>
+</tr>
+<tr>
+<td><strong>Ubuntu Server VM</strong> <em>(optional)</em></td>
+<td>Practice Linux hardening and log analysis</td>
+</tr>
+<tr>
+<td><strong>Isolated Network</strong></td>
+<td>Ensures lab traffic never leaks to your home network</td>
+</tr>
+</tbody>
+</table>
+<p class="has-line-data" data-line-start="31" data-line-end="32"><strong>Total cost: $0</strong> (all software is free for personal/educational use)</p>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="35" data-line-end="36"><a id="Step_1_Check_Your_Hardware_35"></a>Step 1: Check Your Hardware</h2>
+<p class="has-line-data" data-line-start="37" data-line-end="38">Virtual machines share your physical computer’s resources. Here’s the minimum and recommended specs:</p>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Resource</th>
+<th>Minimum</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RAM</strong></td>
+<td>8 GB total</td>
+<td>16 GB+ total</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td>100 GB free SSD space</td>
+<td>250 GB+ SSD</td>
+</tr>
+<tr>
+<td><strong>CPU</strong></td>
+<td>4-core (with VT-x/AMD-V)</td>
+<td>6-core+ modern processor</td>
+</tr>
+<tr>
+<td><strong>OS</strong></td>
+<td>Windows 10/11, macOS, or Linux</td>
+<td>Any 64-bit OS</td>
+</tr>
+</tbody>
+</table>
+<h3 class="code-line has-line-data" data-line-start="46" data-line-end="47"><a id="How_to_Check_Virtualization_Support_46"></a>How to Check Virtualization Support</h3>
+<p class="has-line-data" data-line-start="48" data-line-end="49"><strong>Windows:</strong> Open Task Manager → Performance → CPU → look for <strong>“Virtualization: Enabled”</strong></p>
+<p class="has-line-data" data-line-start="50" data-line-end="51">If disabled, enable <strong>Intel VT-x</strong> or <strong>AMD-V</strong> in your BIOS/UEFI settings before proceeding.</p>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="54" data-line-end="55"><a id="Step_2_Install_a_Hypervisor_54"></a>Step 2: Install a Hypervisor</h2>
+<p class="has-line-data" data-line-start="56" data-line-end="57">A hypervisor lets you run multiple operating systems simultaneously as virtual machines (VMs).</p>
+<h3 class="code-line has-line-data" data-line-start="58" data-line-end="59"><a id="Option_A_VirtualBox_Free_Open_Source_CrossPlatform_58"></a>Option A: VirtualBox (Free, Open Source, Cross-Platform)</h3>
+<ol>
+<li class="has-line-data" data-line-start="60" data-line-end="61">Download from: <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></li>
+<li class="has-line-data" data-line-start="61" data-line-end="62">Download the <strong>Extension Pack</strong> (same page) — required for USB support and clipboard sharing</li>
+<li class="has-line-data" data-line-start="62" data-line-end="64">Install VirtualBox, then double-click the Extension Pack to install it</li>
+</ol>
+<h3 class="code-line has-line-data" data-line-start="64" data-line-end="65"><a id="Option_B_VMware_Workstation_Player_Free_for_Personal_Use_64"></a>Option B: VMware Workstation Player (Free for Personal Use)</h3>
+<ol>
+<li class="has-line-data" data-line-start="66" data-line-end="67">Download from: <a href="https://www.vmware.com/products/workstation-player.html">https://www.vmware.com/products/workstation-player.html</a></li>
+<li class="has-line-data" data-line-start="67" data-line-end="69">Install with default settings</li>
+</ol>
+<blockquote>
+<p class="has-line-data" data-line-start="69" data-line-end="70"><strong>My recommendation:</strong> Start with <strong>VirtualBox</strong> — it is completely free, open-source, and has the largest community support for troubleshooting.</p>
+</blockquote>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="73" data-line-end="74"><a id="Step_3_Download_Your_Operating_Systems_73"></a>Step 3: Download Your Operating Systems</h2>
+<h3 class="code-line has-line-data" data-line-start="75" data-line-end="76"><a id="Kali_Linux_Offensive_Security_75"></a>Kali Linux (Offensive Security)</h3>
+<p class="has-line-data" data-line-start="77" data-line-end="78">Kali is a Debian-based Linux distribution built specifically for penetration testing and security auditing.</p>
+<ol>
+<li class="has-line-data" data-line-start="79" data-line-end="80">Go to: <a href="https://www.kali.org/get-kali/#kali-virtual-machines">https://www.kali.org/get-kali/#kali-virtual-machines</a></li>
+<li class="has-line-data" data-line-start="80" data-line-end="81">Download the <strong>VirtualBox 64-bit image</strong> (pre-built VM, ~3 GB)</li>
+<li class="has-line-data" data-line-start="81" data-line-end="83">Extract the <code>.7z</code> file using 7-Zip or your archive tool</li>
+</ol>
+<blockquote>
+<p class="has-line-data" data-line-start="83" data-line-end="84"><strong>Pro tip:</strong> Using the pre-built VM is faster than installing from ISO. It comes with VirtualBox Guest Additions pre-installed.</p>
+</blockquote>
+<h3 class="code-line has-line-data" data-line-start="85" data-line-end="86"><a id="Windows_1011_Evaluation_Target_Machine_85"></a>Windows 10/11 Evaluation (Target Machine)</h3>
+<p class="has-line-data" data-line-start="87" data-line-end="88">You need a legal Windows VM to practice against. Microsoft provides free evaluation images.</p>
+<ol>
+<li class="has-line-data" data-line-start="89" data-line-end="90">Go to: <a href="https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/">https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/</a></li>
+<li class="has-line-data" data-line-start="90" data-line-end="91">Download the <strong>VirtualBox</strong> version of the Windows development environment</li>
+<li class="has-line-data" data-line-start="91" data-line-end="93">Alternatively, use a Windows 10/11 ISO from <a href="https://www.microsoft.com/software-download/windows10">Microsoft’s Software Download page</a> and install manually</li>
+</ol>
+<blockquote>
+<p class="has-line-data" data-line-start="93" data-line-end="94"><strong>Important:</strong> Evaluation VMs expire after 90 days. For a permanent lab, create a Windows VM using an ISO and a valid license key, or use the free Windows 10/11 ISO without activation (works with limited personalization).</p>
+</blockquote>
+<h3 class="code-line has-line-data" data-line-start="95" data-line-end="96"><a id="Ubuntu_Server_Optional_For_Blue_Team_Practice_95"></a>Ubuntu Server (Optional — For Blue Team Practice)</h3>
+<ol>
+<li class="has-line-data" data-line-start="97" data-line-end="98">Download from: <a href="https://ubuntu.com/download/server">https://ubuntu.com/download/server</a></li>
+<li class="has-line-data" data-line-start="98" data-line-end="100">Download the LTS ISO (~2 GB)</li>
+</ol>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="102" data-line-end="103"><a id="Step_4_Import_and_Configure_Kali_Linux_102"></a>Step 4: Import and Configure Kali Linux</h2>
+<h3 class="code-line has-line-data" data-line-start="104" data-line-end="105"><a id="Import_the_PreBuilt_VM_104"></a>Import the Pre-Built VM</h3>
+<ol>
+<li class="has-line-data" data-line-start="106" data-line-end="107">Open VirtualBox</li>
+<li class="has-line-data" data-line-start="107" data-line-end="108">Go to <strong>File → Import Appliance</strong></li>
+<li class="has-line-data" data-line-start="108" data-line-end="109">Select the extracted <code>.ova</code> file from your Kali download</li>
+<li class="has-line-data" data-line-start="109" data-line-end="111">Click through the import wizard (default settings are fine)</li>
+</ol>
+<h3 class="code-line has-line-data" data-line-start="111" data-line-end="112"><a id="Configure_Kali_VM_Settings_111"></a>Configure Kali VM Settings</h3>
+<p class="has-line-data" data-line-start="113" data-line-end="114">Before starting, adjust these settings for optimal performance:</p>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Setting</th>
+<th>Recommended Value</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>System → Base Memory</strong></td>
+<td>4096 MB (4 GB)</td>
+<td>Kali needs RAM to run multiple tools</td>
+</tr>
+<tr>
+<td><strong>System → Processors</strong></td>
+<td>2 CPUs</td>
+<td>Balance between performance and host stability</td>
+</tr>
+<tr>
+<td><strong>Display → Video Memory</strong></td>
+<td>128 MB</td>
+<td>Improves GUI responsiveness</td>
+</tr>
+<tr>
+<td><strong>Network → Adapter 1</strong></td>
+<td>NAT</td>
+<td>Provides internet access for updates</td>
+</tr>
+</tbody>
+</table>
+<p class="has-line-data" data-line-start="122" data-line-end="123"><strong>To edit:</strong> Right-click the VM → Settings → adjust values → OK.</p>
+<h3 class="code-line has-line-data" data-line-start="124" data-line-end="125"><a id="First_Boot_and_Update_124"></a>First Boot and Update</h3>
+<ol>
+<li class="has-line-data" data-line-start="126" data-line-end="127">Start the Kali VM</li>
+<li class="has-line-data" data-line-start="127" data-line-end="128">Default credentials: <code>kali</code> / <code>kali</code></li>
+<li class="has-line-data" data-line-start="128" data-line-end="130">Open a terminal and run:</li>
+</ol>
+<pre><code class="has-line-data language-bash" data-line-start="131" data-line-end="140"><span class="hljs-comment"># Update the package list</span>
+<span class="hljs-built_in">sudo</span> apt update
+
+<span class="hljs-comment"># Upgrade all installed packages</span>
+<span class="hljs-built_in">sudo</span> apt full-upgrade -y
+
+<span class="hljs-comment"># Clean up</span>
+<span class="hljs-built_in">sudo</span> apt autoremove -y
+</code></pre>
+<p class="has-line-data" data-line-start="141" data-line-end="142">This may take 30–60 minutes depending on your internet speed. Grab coffee.</p>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="145" data-line-end="146"><a id="Step_5_Set_Up_Your_Windows_Target_VM_145"></a>Step 5: Set Up Your Windows Target VM</h2>
+<h3 class="code-line has-line-data" data-line-start="147" data-line-end="148"><a id="If_Using_the_PreBuilt_Microsoft_VM_147"></a>If Using the Pre-Built Microsoft VM</h3>
+<ol>
+<li class="has-line-data" data-line-start="149" data-line-end="150">Import the <code>.ova</code> file the same way you imported Kali</li>
+<li class="has-line-data" data-line-start="150" data-line-end="151">Adjust settings: 4 GB RAM, 2 CPUs, 128 MB video memory</li>
+<li class="has-line-data" data-line-start="151" data-line-end="153">Start the VM and let it boot</li>
+</ol>
+<h3 class="code-line has-line-data" data-line-start="153" data-line-end="154"><a id="If_Installing_from_ISO_153"></a>If Installing from ISO</h3>
+<ol>
+<li class="has-line-data" data-line-start="155" data-line-end="156">In VirtualBox, click <strong>New</strong></li>
+<li class="has-line-data" data-line-start="156" data-line-end="157">Name it “Windows-10-Lab”, select type “Microsoft Windows”, version “Windows 10 (64-bit)”</li>
+<li class="has-line-data" data-line-start="157" data-line-end="158">Allocate 4 GB RAM and create a 60 GB virtual hard disk (VDI, dynamically allocated)</li>
+<li class="has-line-data" data-line-start="158" data-line-end="159">Start the VM and select your Windows ISO when prompted</li>
+<li class="has-line-data" data-line-start="159" data-line-end="161">Complete the Windows installation normally</li>
+</ol>
+<h3 class="code-line has-line-data" data-line-start="161" data-line-end="162"><a id="PostInstallation_Make_Windows_Vulnerable_Safely_161"></a>Post-Installation: Make Windows “Vulnerable” (Safely)</h3>
+<p class="has-line-data" data-line-start="163" data-line-end="164">For a realistic lab, you want a target that behaves like a real corporate machine — but isolated.</p>
+<p class="has-line-data" data-line-start="165" data-line-end="166"><strong>Do NOT do this on a real production machine:</strong></p>
+<ol>
+<li class="has-line-data" data-line-start="167" data-line-end="168"><strong>Create a snapshot first!</strong> (Machine → Take Snapshot → name it “Clean Install”)</li>
+<li class="has-line-data" data-line-start="168" data-line-end="169">Disable Windows Defender temporarily for testing (Settings → Update &amp; Security → Windows Security → Virus &amp; threat protection → Manage settings → toggle off)</li>
+<li class="has-line-data" data-line-start="169" data-line-end="170">Enable file and printer sharing (for lateral movement practice)</li>
+<li class="has-line-data" data-line-start="170" data-line-end="172">Install an intentionally vulnerable application like <strong>DVWA</strong> (Damn Vulnerable Web Application) or <strong>BadStore</strong> for web app testing</li>
+</ol>
+<blockquote>
+<p class="has-line-data" data-line-start="172" data-line-end="173"><strong>Critical:</strong> This VM must never leave your isolated lab network. See Step 7.</p>
+</blockquote>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="176" data-line-end="177"><a id="Step_6_Create_an_Isolated_Lab_Network_176"></a>Step 6: Create an Isolated Lab Network</h2>
+<p class="has-line-data" data-line-start="178" data-line-end="179">This is the <strong>most important step</strong> for safety. Your attack VM and target VM should communicate with each other, but malicious traffic should never reach your home network or the internet.</p>
+<h3 class="code-line has-line-data" data-line-start="180" data-line-end="181"><a id="VirtualBox_Network_Modes_Explained_180"></a>VirtualBox Network Modes Explained</h3>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Mode</th>
+<th>VM → Internet</th>
+<th>VM ↔ Host</th>
+<th>VM ↔ VM</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NAT</strong></td>
+<td>✅ Yes</td>
+<td>❌ No</td>
+<td>❌ No</td>
+<td>Safe browsing, updates</td>
+</tr>
+<tr>
+<td><strong>Bridged</strong></td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td><em>Avoid for labs</em> — exposes VM to LAN</td>
+</tr>
+<tr>
+<td><strong>Internal Network</strong></td>
+<td>❌ No</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+<td><strong>Best for attack/target isolation</strong></td>
+</tr>
+<tr>
+<td><strong>Host-Only</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>VM can talk to host only</td>
+</tr>
+</tbody>
+</table>
+<h3 class="code-line has-line-data" data-line-start="189" data-line-end="190"><a id="Recommended_Lab_Configuration_189"></a>Recommended Lab Configuration</h3>
+<p class="has-line-data" data-line-start="191" data-line-end="192"><strong>Kali Linux VM:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="192" data-line-end="193"><strong>Adapter 1:</strong> NAT (for internet access, updates, tool downloads)</li>
+<li class="has-line-data" data-line-start="193" data-line-end="195"><strong>Adapter 2:</strong> Internal Network, name: <code>Lab-Network</code> (for attacking targets)</li>
+</ul>
+<p class="has-line-data" data-line-start="195" data-line-end="196"><strong>Windows Target VM:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="196" data-line-end="198"><strong>Adapter 1:</strong> Internal Network, name: <code>Lab-Network</code> (isolated, can only talk to Kali)</li>
+</ul>
+<h3 class="code-line has-line-data" data-line-start="198" data-line-end="199"><a id="How_to_Configure_198"></a>How to Configure</h3>
+<ol>
+<li class="has-line-data" data-line-start="200" data-line-end="204">
+<p class="has-line-data" data-line-start="200" data-line-end="201"><strong>Kali VM → Settings → Network:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="201" data-line-end="202">Adapter 1: Attached to <strong>NAT</strong></li>
+<li class="has-line-data" data-line-start="202" data-line-end="204">Adapter 2: Check “Enable Network Adapter”, Attached to <strong>Internal Network</strong>, Name: <code>Lab-Network</code></li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="204" data-line-end="207">
+<p class="has-line-data" data-line-start="204" data-line-end="205"><strong>Windows VM → Settings → Network:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="205" data-line-end="207">Adapter 1: Attached to <strong>Internal Network</strong>, Name: <code>Lab-Network</code></li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="207" data-line-end="211">
+<p class="has-line-data" data-line-start="207" data-line-end="208"><strong>Configure static IPs</strong> (since there’s no DHCP on the internal network):</p>
+<ul>
+<li class="has-line-data" data-line-start="208" data-line-end="209"><strong>Kali (Adapter 2):</strong> <code>192.168.56.10/24</code></li>
+<li class="has-line-data" data-line-start="209" data-line-end="211"><strong>Windows:</strong> <code>192.168.56.20/24</code>, Gateway: <code>192.168.56.10</code></li>
+</ul>
+</li>
+</ol>
+<h3 class="code-line has-line-data" data-line-start="211" data-line-end="212"><a id="Setting_a_Static_IP_in_Kali_211"></a>Setting a Static IP in Kali</h3>
+<pre><code class="has-line-data language-bash" data-line-start="214" data-line-end="220"><span class="hljs-comment"># Check your interface name</span>
+ip addr
+
+<span class="hljs-comment"># Edit the network interface configuration</span>
+<span class="hljs-built_in">sudo</span> nano /etc/network/interfaces
+</code></pre>
+<p class="has-line-data" data-line-start="221" data-line-end="222">Add:</p>
+<pre><code class="has-line-data" data-line-start="224" data-line-end="229">auto eth1
+iface eth1 inet static
+    address 192.168.56.10
+    netmask 255.255.255.0
+</code></pre>
+<p class="has-line-data" data-line-start="230" data-line-end="231">Restart networking:</p>
+<pre><code class="has-line-data language-bash" data-line-start="233" data-line-end="235"><span class="hljs-built_in">sudo</span> systemctl restart networking
+</code></pre>
+<h3 class="code-line has-line-data" data-line-start="236" data-line-end="237"><a id="Setting_a_Static_IP_in_Windows_236"></a>Setting a Static IP in Windows</h3>
+<ol>
+<li class="has-line-data" data-line-start="238" data-line-end="239">Settings → Network &amp; Internet → Change adapter options</li>
+<li class="has-line-data" data-line-start="239" data-line-end="240">Right-click Ethernet adapter → Properties → IPv4 Properties</li>
+<li class="has-line-data" data-line-start="240" data-line-end="245">Use the following IP address:
+<ul>
+<li class="has-line-data" data-line-start="241" data-line-end="242">IP: <code>192.168.56.20</code></li>
+<li class="has-line-data" data-line-start="242" data-line-end="243">Subnet mask: <code>255.255.255.0</code></li>
+<li class="has-line-data" data-line-start="243" data-line-end="245">Gateway: <code>192.168.56.10</code></li>
+</ul>
+</li>
+</ol>
+<h3 class="code-line has-line-data" data-line-start="245" data-line-end="246"><a id="Verify_Connectivity_245"></a>Verify Connectivity</h3>
+<p class="has-line-data" data-line-start="247" data-line-end="248">From Kali, ping your target:</p>
+<pre><code class="has-line-data language-bash" data-line-start="250" data-line-end="252">ping 192.168.56.20
+</code></pre>
+<p class="has-line-data" data-line-start="253" data-line-end="254">From Windows, ping Kali:</p>
+<pre><code class="has-line-data language-cmd" data-line-start="256" data-line-end="258"><span class="hljs-built_in">ping</span> <span class="hljs-number">192</span>.<span class="hljs-number">168</span>.<span class="hljs-number">56</span>.<span class="hljs-number">10</span>
+</code></pre>
+<p class="has-line-data" data-line-start="259" data-line-end="260">If both succeed, your isolated lab network is working.</p>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="263" data-line-end="264"><a id="Step_7_Essential_Lab_Hygiene_263"></a>Step 7: Essential Lab Hygiene</h2>
+<h3 class="code-line has-line-data" data-line-start="265" data-line-end="266"><a id="1_Snapshots_Are_Your_Best_Friend_265"></a>1. Snapshots Are Your Best Friend</h3>
+<p class="has-line-data" data-line-start="267" data-line-end="268">Before running any exploit or suspicious software, take a snapshot. If something breaks, revert in seconds.</p>
+<ul>
+<li class="has-line-data" data-line-start="269" data-line-end="270"><strong>VirtualBox:</strong> Machine → Take Snapshot (name it descriptively, e.g., “Before-Metasploit-Practice”)</li>
+<li class="has-line-data" data-line-start="270" data-line-end="272"><strong>VMware:</strong> VM → Snapshot → Take Snapshot</li>
+</ul>
+<h3 class="code-line has-line-data" data-line-start="272" data-line-end="273"><a id="2_Never_Bridge_to_Your_Home_Network_During_Attacks_272"></a>2. Never Bridge to Your Home Network During Attacks</h3>
+<p class="has-line-data" data-line-start="274" data-line-end="275">If you accidentally set your target to Bridged mode and run an exploit, you could scan or attack your actual home devices (router, smart TV, family members’ phones). Always double-check network settings.</p>
+<h3 class="code-line has-line-data" data-line-start="276" data-line-end="277"><a id="3_Disable_CopyPaste_and_DragDrop_for_HighRisk_VMs_276"></a>3. Disable Copy-Paste and Drag-Drop for High-Risk VMs</h3>
+<p class="has-line-data" data-line-start="278" data-line-end="279">If you’re analyzing actual malware in your lab:</p>
+<ul>
+<li class="has-line-data" data-line-start="280" data-line-end="281">VM Settings → General → Advanced → Shared Clipboard: <strong>Disabled</strong></li>
+<li class="has-line-data" data-line-start="281" data-line-end="283">Drag’n’Drop: <strong>Disabled</strong></li>
+</ul>
+<p class="has-line-data" data-line-start="283" data-line-end="284">This prevents malware from escaping the VM via clipboard or file drag.</p>
+<h3 class="code-line has-line-data" data-line-start="285" data-line-end="286"><a id="4_Keep_Your_Host_Machine_Updated_285"></a>4. Keep Your Host Machine Updated</h3>
+<p class="has-line-data" data-line-start="287" data-line-end="288">Your host OS is the last line of defense. Keep it patched, use a firewall, and run antivirus. The VM is isolated, but hypervisor escape vulnerabilities (though rare) do exist.</p>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="291" data-line-end="292"><a id="Step_8_First_Lab_Exercise_Verify_Your_Setup_291"></a>Step 8: First Lab Exercise — Verify Your Setup</h2>
+<p class="has-line-data" data-line-start="293" data-line-end="294">Let’s do something simple to confirm everything works.</p>
+<h3 class="code-line has-line-data" data-line-start="295" data-line-end="296"><a id="Exercise_Port_Scan_Your_Target_Legal_Because_You_Own_It_295"></a>Exercise: Port Scan Your Target (Legal, Because You Own It)</h3>
+<ol>
+<li class="has-line-data" data-line-start="297" data-line-end="298">Boot both VMs (Kali and Windows)</li>
+<li class="has-line-data" data-line-start="298" data-line-end="299">On Kali, open a terminal</li>
+<li class="has-line-data" data-line-start="299" data-line-end="301">Run an Nmap scan against your Windows target:</li>
+</ol>
+<pre><code class="has-line-data language-bash" data-line-start="302" data-line-end="304">nmap -sV -O 192.168.56.20
+</code></pre>
+<p class="has-line-data" data-line-start="305" data-line-end="306"><strong>What this does:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="306" data-line-end="307"><code>-sV</code> = Detect service versions running on open ports</li>
+<li class="has-line-data" data-line-start="307" data-line-end="308"><code>-O</code> = Attempt operating system detection</li>
+<li class="has-line-data" data-line-start="308" data-line-end="310"><code>192.168.56.20</code> = Your Windows target’s IP</li>
+</ul>
+<p class="has-line-data" data-line-start="310" data-line-end="311"><strong>Expected output:</strong> A list of open ports (like 135, 139, 445 for SMB), service versions, and a guess at the OS.</p>
+<p class="has-line-data" data-line-start="312" data-line-end="313"><strong>What you just learned:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="313" data-line-end="314">How attackers map a network</li>
+<li class="has-line-data" data-line-start="314" data-line-end="315">What services are exposed by default on Windows</li>
+<li class="has-line-data" data-line-start="315" data-line-end="317">Why disabling unnecessary services is critical for defense</li>
+</ul>
+<p class="has-line-data" data-line-start="317" data-line-end="318"><strong>Defensive takeaway:</strong> If you saw ports 135, 139, 445 open, that’s normal for Windows — but on a public-facing server, these should be firewalled. As a defender, you’d use this same scan to audit your own network.</p>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="321" data-line-end="322"><a id="Step_9_Expanding_Your_Lab_Whats_Next_321"></a>Step 9: Expanding Your Lab (What’s Next)</h2>
+<p class="has-line-data" data-line-start="323" data-line-end="324">Once you’re comfortable, add these to your lab:</p>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Addition</th>
+<th>Purpose</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>pfSense VM</strong></td>
+<td>Practice firewall rules, VLANs, IDS/IPS</td>
+<td>Download pfSense ISO, install as VM</td>
+</tr>
+<tr>
+<td><strong>Ubuntu Server + ELK</strong></td>
+<td>Build a SIEM to collect and analyze logs</td>
+<td>Install Elasticsearch, Logstash, Kibana</td>
+</tr>
+<tr>
+<td><strong>Metasploitable 2</strong></td>
+<td>Intentionally vulnerable Linux target</td>
+<td>Download from SourceForge, import to VirtualBox</td>
+</tr>
+<tr>
+<td><strong>Active Directory Lab</strong></td>
+<td>Practice domain attacks and defenses</td>
+<td>Install Windows Server + 2 Windows clients</td>
+</tr>
+<tr>
+<td><strong>FLARE VM</strong></td>
+<td>Windows malware analysis environment</td>
+<td>Install on Windows VM from <a href="http://fireeye.com">fireeye.com</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="335" data-line-end="336"><a id="Troubleshooting_Common_Issues_335"></a>Troubleshooting Common Issues</h2>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“VT-x is not available” error</td>
+<td>Enable virtualization in BIOS/UEFI</td>
+</tr>
+<tr>
+<td>VMs are very slow</td>
+<td>Allocate less RAM to each VM, or upgrade your physical RAM</td>
+</tr>
+<tr>
+<td>No internet in Kali</td>
+<td>Check Adapter 1 is set to NAT, not Internal Network</td>
+</tr>
+<tr>
+<td>Can’t ping between VMs</td>
+<td>Ensure both are on the same Internal Network name; check Windows Firewall</td>
+</tr>
+<tr>
+<td>Screen resolution stuck at 800x600</td>
+<td>Install VirtualBox Guest Additions (Devices → Insert Guest Additions CD)</td>
+</tr>
+<tr>
+<td>Windows evaluation expired</td>
+<td>Take a snapshot before it expires, or reinstall</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="348" data-line-end="349"><a id="Lab_Rules_to_Live_By_348"></a>Lab Rules to Live By</h2>
+<ol>
+<li class="has-line-data" data-line-start="350" data-line-end="351"><strong>Isolate first, attack second.</strong> Always verify network settings before running scans or exploits.</li>
+<li class="has-line-data" data-line-start="351" data-line-end="352"><strong>Snapshot everything.</strong> A 10-second snapshot saves hours of reinstallation.</li>
+<li class="has-line-data" data-line-start="352" data-line-end="353"><strong>Never test outside your lab.</strong> Your home router, your neighbor’s Wi-Fi, and public websites are off-limits.</li>
+<li class="has-line-data" data-line-start="353" data-line-end="354"><strong>Document what you learn.</strong> Keep a lab notebook (digital or physical) of commands, outputs, and lessons.</li>
+<li class="has-line-data" data-line-start="354" data-line-end="356"><strong>Think defensively.</strong> For every attack you practice, ask: <em>“How would I detect or prevent this?”</em></li>
+</ol>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="358" data-line-end="359"><a id="Resources_Downloads_358"></a>Resources &amp; Downloads</h2>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Resource</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VirtualBox</td>
+<td><a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></td>
+</tr>
+<tr>
+<td>Kali Linux VMs</td>
+<td><a href="https://www.kali.org/get-kali/#kali-virtual-machines">https://www.kali.org/get-kali/#kali-virtual-machines</a></td>
+</tr>
+<tr>
+<td>Windows Eval VMs</td>
+<td><a href="https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/">https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/</a></td>
+</tr>
+<tr>
+<td>Metasploitable 2</td>
+<td><a href="https://sourceforge.net/projects/metasploitable/">https://sourceforge.net/projects/metasploitable/</a></td>
+</tr>
+<tr>
+<td>pfSense</td>
+<td><a href="https://www.pfsense.org/download/">https://www.pfsense.org/download/</a></td>
+</tr>
+<tr>
+<td>7-Zip (for extracting)</td>
+<td><a href="https://www.7-zip.org/">https://www.7-zip.org/</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 class="code-line has-line-data" data-line-start="371" data-line-end="372"><a id="Whats_Next_371"></a>What’s Next?</h2>
+<p class="has-line-data" data-line-start="373" data-line-end="374">In the next post, we’ll cover <strong>“The Cyber Kill Chain: How Attacks Actually Happen”</strong> — understanding the reconnaissance → weaponization → delivery → exploitation → installation → C2 → actions on objectives flow. This mental model will guide every technique you learn in this lab.</p>
+<p class="has-line-data" data-line-start="375" data-line-end="376"><strong>Questions?</strong> Drop them in the comments. If you hit a specific error, paste the exact message — the cybersecurity community thrives on detailed troubleshooting.</p>
+<hr>
+<p class="has-line-data" data-line-start="379" data-line-end="380"><em>Published: August 2026 | Category: Beginner | Tags: #homelab #virtualbox #kali #cybersecurity #infosec</em></p>
+
+</body>
+</html>
