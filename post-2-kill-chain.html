@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Cyber Kill Chain: How Attacks Actually Happen | CyberSec From Scratch</title>
+  <meta name="description" content="Understand the 7 stages of the Cyber Kill Chain — reconnaissance to actions on objectives — and how defenders break the chain at every step.">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">CyberSec From Scratch</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#series">Series</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="https://github.com/yourusername" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>CyberSec From Scratch</h1>
+      <p class="hero-subtitle">Understanding attacks to build better defenses.</p>
+      <div class="hero-tagline">Educational cybersecurity content for beginners and beyond.</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Post Header -->
+    <header class="post-header">
+      <h1 class="post-title">The Cyber Kill Chain: How Attacks Actually Happen</h1>
+      <div class="post-meta">
+        <span>📅 August 20, 2026</span>
+        <span>⏱️ 20 min read</span>
+        <span>🏷️ Beginner</span>
+        <span>👤 Your Name</span>
+      </div>
+      <div class="post-tags">
+        <span class="tag">#kill-chain</span>
+        <span class="tag">#framework</span>
+        <span class="tag">#defense</span>
+        <span class="tag">#cybersecurity</span>
+        <span class="tag">#infosec</span>
+      </div>
+    </header>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <div class="disclaimer-title">⚠️ EDUCATIONAL DISCLAIMER</div>
+      <p>This guide explains attack frameworks from a <strong>defensive perspective</strong>. Understanding how adversaries operate is essential for building effective detection and response capabilities. Never practice attack techniques on systems you do not own or have explicit written permission to test.</p>
+    </div>
+
+    <!-- Post Content -->
+    <article class="post-content">
+
+      <h2>Why the Kill Chain Matters</h2>
+      <p>Every cyberattack — from a script kiddie running automated scans to a nation-state APT — follows a pattern. The <strong>Cyber Kill Chain</strong>, developed by Lockheed Martin in 2011, breaks that pattern into seven stages. If you understand the stages, you can <strong>break the chain</strong> at any point and stop the attack.</p>
+
+      <p>This is not just theory. SOC analysts, incident responders, and threat hunters use this model every day to:</p>
+      <ul>
+        <li>Map detected events to attack stages</li>
+        <li>Identify which defenses failed and which worked</li>
+        <li>Prioritize security investments where they matter most</li>
+        <li>Communicate incidents clearly to non-technical stakeholders</li>
+      </ul>
+
+      <h2>The 7 Stages of the Cyber Kill Chain</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>What Attackers Do</th>
+            <th>What Defenders Do</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Reconnaissance</strong></td>
+            <td>Gather information about the target</td>
+            <td>Minimize public footprint, monitor for scans</td>
+          </tr>
+          <tr>
+            <td><strong>2. Weaponization</strong></td>
+            <td>Combine exploit + payload into deliverable</td>
+            <td>Threat intel, signature development</td>
+          </tr>
+          <tr>
+            <td><strong>3. Delivery</strong></td>
+            <td>Transmit weapon to target (email, USB, web)</td>
+            <td>Email filtering, web proxies, USB controls</td>
+          </tr>
+          <tr>
+            <td><strong>4. Exploitation</strong></td>
+            <td>Trigger vulnerability to execute code</td>
+            <td>Patch management, exploit mitigation</td>
+          </tr>
+          <tr>
+            <td><strong>5. Installation</strong></td>
+            <td>Establish persistence (backdoor, service)</td>
+            <td>EDR, integrity monitoring, least privilege</td>
+          </tr>
+          <tr>
+            <td><strong>6. Command & Control (C2)</strong></td>
+            <td>Communicate with attacker infrastructure</td>
+            <td>Network monitoring, DNS filtering, beacon detection</td>
+          </tr>
+          <tr>
+            <td><strong>7. Actions on Objectives</strong></td>
+            <td>Exfiltrate data, deploy ransomware, etc.</td>
+            <td>DLP, encryption, segmentation, logging</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📝 Key Insight</div>
+        <p>An attacker must complete <strong>all seven stages</strong> to achieve their goal. A defender only needs to <strong>break one stage</strong> to stop the entire attack. This asymmetry is the defender's advantage.</p>
+      </div>
+
+      <hr>
+
+      <h2>Stage 1: Reconnaissance</h2>
+      <p>Before attacking, the adversary learns everything they can about the target. There are two types:</p>
+
+      <h3>Passive Reconnaissance</h3>
+      <p>Gathering information <strong>without directly interacting</strong> with the target. The target has no idea it's happening.</p>
+      <ul>
+        <li><strong>WHOIS lookups</strong> — domain registration details, name servers</li>
+        <li><strong>DNS enumeration</strong> — subdomains, MX records, SPF records</li>
+        <li><strong>OSINT (Open Source Intelligence)</strong> — LinkedIn, company websites, press releases</li>
+        <li><strong>Shodan / Censys</strong> — find internet-facing devices and services</li>
+        <li><strong>Google Dorks</strong> — advanced search operators to find exposed files, login pages, error messages</li>
+      </ul>
+
+      <h3>Active Reconnaissance</h3>
+      <p>Directly interacting with the target's systems. <strong>This can be detected.</strong></p>
+      <ul>
+        <li><strong>Port scanning</strong> — Nmap, Masscan to find open ports</li>
+        <li><strong>Service enumeration</strong> — banner grabbing, version detection</li>
+        <li><strong>Vulnerability scanning</strong> — Nessus, OpenVAS</li>
+        <li><strong>Social engineering</strong> — phishing emails, phone calls, physical visits</li>
+      </ul>
+
+      <h3>How to Break This Stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Defense</th>
+            <th>How It Works</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Attack Surface Reduction</strong></td>
+            <td>Remove unnecessary services, close unused ports, use private WHOIS</td>
+          </tr>
+          <tr>
+            <td><strong>Honeypots</strong></td>
+            <td>Deploy fake systems to detect and analyze reconnaissance activity</td>
+          </tr>
+          <tr>
+            <td><strong>Threat Intelligence</strong></td>
+            <td>Subscribe to feeds that list known malicious IPs scanning the internet</td>
+          </tr>
+          <tr>
+            <td><strong>Employee Training</strong></td>
+            <td>Teach staff to verify unusual requests and not overshare on social media</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Stage 2: Weaponization</h2>
+      <p>The attacker creates a deliverable weapon. This usually means combining:</p>
+      <ul>
+        <li><strong>An exploit</strong> — code that triggers a vulnerability</li>
+        <li><strong>A payload</strong> — the malicious action (reverse shell, keylogger, ransomware)</li>
+        <li><strong>A delivery mechanism</strong> — Word macro, PDF, executable, script</li>
+      </ul>
+
+      <h3>Common Weaponization Techniques</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Technique</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Office Macros</strong></td>
+            <td>Malicious VBA in Word/Excel that downloads payload when enabled</td>
+          </tr>
+          <tr>
+            <td><strong>PDF Exploits</strong></td>
+            <td>Embedded JavaScript or malformed objects triggering reader vulnerabilities</td>
+          </tr>
+          <tr>
+            <td><strong>Script-Based</strong></td>
+            <td>PowerShell, Python, or JavaScript scripts that execute in memory</td>
+          </tr>
+          <tr>
+            <td><strong>Exploit Kits</strong></td>
+            <td>Automated web platforms that serve exploits based on browser fingerprint</td>
+          </tr>
+          <tr>
+            <td><strong>Living Off The Land</strong></td>
+            <td>Using legitimate system tools (PowerShell, WMI, certutil) for malicious purposes</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Break This Stage</h3>
+      <ul>
+        <li><strong>Macro blocking</strong> — Group Policy to block macros from internet-originated files</li>
+        <li><strong>Application allowlisting</strong> — Only approved executables can run (AppLocker, WDAC)</li>
+        <li><strong>Threat intelligence</strong> — IOC feeds for known malicious file hashes</li>
+        <li><strong>Script execution policies</strong> — Constrained Language Mode for PowerShell</li>
+      </ul>
+
+      <hr>
+
+      <h2>Stage 3: Delivery</h2>
+      <p>The weapon is transmitted to the target. This is where the attack crosses the perimeter.</p>
+
+      <h3>Common Delivery Vectors</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Vector</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Phishing Email</strong></td>
+            <td>Spear-phishing with malicious attachment or link</td>
+          </tr>
+          <tr>
+            <td><strong>Watering Hole</strong></td>
+            <td>Compromising a website the target frequently visits</td>
+          </tr>
+          <tr>
+            <td><strong>USB Drop</strong></td>
+            <td>Leaving infected USB drives in parking lots (HID attacks, autorun malware)</td>
+          </tr>
+          <tr>
+            <td><strong>Supply Chain</strong></td>
+            <td>Compromising software vendor to distribute trojanized updates</td>
+          </tr>
+          <tr>
+            <td><strong>Malvertising</strong></td>
+            <td>Malicious ads on legitimate websites redirecting to exploit kits</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Break This Stage</h3>
+      <ul>
+        <li><strong>Email security gateways</strong> — SPF, DKIM, DMARC, sandboxing attachments</li>
+        <li><strong>Web filtering</strong> — Proxy with URL categorization, SSL inspection</li>
+        <li><strong>USB port controls</strong> — Disable or restrict removable media</li>
+        <li><strong>User awareness training</strong> — Phishing simulations, reporting procedures</li>
+      </ul>
+
+      <hr>
+
+      <h2>Stage 4: Exploitation</h2>
+      <p>The weapon triggers a vulnerability to execute code on the target system. This is the moment the attack becomes technical.</p>
+
+      <h3>Types of Exploitation</h3>
+      <ul>
+        <li><strong>Software vulnerability</strong> — Buffer overflow, use-after-free, SQL injection</li>
+        <li><strong>Configuration weakness</strong> — Default passwords, exposed admin panels</li>
+        <li><strong>Human vulnerability</strong> — User enables macro, clicks link, enters credentials</li>
+        <li><strong>Zero-day</strong> — Unknown vulnerability with no patch available</li>
+      </ul>
+
+      <h3>How to Break This Stage</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Defense</th>
+            <th>How It Works</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Patch Management</strong></td>
+            <td>Rapid deployment of security updates (target: critical patches within 24-48 hours)</td>
+          </tr>
+          <tr>
+            <td><strong>Exploit Mitigation</strong></td>
+            <td>ASLR, DEP, CFG, EMET/Windows Defender Exploit Guard</td>
+          </tr>
+          <tr>
+            <td><strong>Browser Isolation</strong></td>
+            <td>Remote browser execution prevents web exploits from reaching the endpoint</td>
+          </tr>
+          <tr>
+            <td><strong>Application Sandboxing</strong></td>
+            <td>Restrict what applications can access (AppContainer, SELinux, AppArmor)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Stage 5: Installation</h2>
+      <p>The attacker establishes persistence — a way to maintain access even if the system reboots or the user logs out.</p>
+
+      <h3>Common Persistence Mechanisms</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Mechanism</th>
+            <th>Location / Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Registry Run Keys</strong></td>
+            <td><code>HKLM\Software\Microsoft\Windows\CurrentVersion\Run</code></td>
+          </tr>
+          <tr>
+            <td><strong>Scheduled Tasks</strong></td>
+            <td>Task Scheduler with hidden or disguised entries</td>
+          </tr>
+          <tr>
+            <td><strong>Services</strong></td>
+            <td>Creating new Windows services that auto-start</td>
+          </tr>
+          <tr>
+            <td><strong>Startup Folders</strong></td>
+            <td><code>%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup</code></td>
+          </tr>
+          <tr>
+            <td><strong>WMI Event Subscriptions</strong></td>
+            <td>Trigger actions based on system events (fileless persistence)</td>
+          </tr>
+          <tr>
+            <td><strong>Bootkits / Rootkits</strong></td>
+            <td>Modify bootloader or kernel for pre-OS persistence</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Break This Stage</h3>
+      <ul>
+        <li><strong>EDR (Endpoint Detection & Response)</strong> — Monitors for suspicious process creation, registry changes, service installations</li>
+        <li><strong>File Integrity Monitoring (FIM)</strong> — Alerts when critical files/registry keys change</li>
+        <li><strong>Least Privilege</strong> — Standard users cannot install services or modify system registry</li>
+        <li><strong>Application Control</strong> — Only approved software can execute</li>
+      </ul>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">💡 Defensive Insight</div>
+        <p>Most persistence requires <strong>administrator privileges</strong>. Running as a standard user (not admin) for daily work breaks multiple kill chain stages automatically.</p>
+      </div>
+
+      <hr>
+
+      <h2>Stage 6: Command & Control (C2)</h2>
+      <p>The compromised system communicates back to the attacker's infrastructure. This is the "phone home" stage.</p>
+
+      <h3>How C2 Works</h3>
+      <p>Once installed, malware needs a way to receive commands and send data. Common C2 channels:</p>
+      <ul>
+        <li><strong>HTTP/HTTPS</strong> — Blends with normal web traffic, hard to distinguish</li>
+        <li><strong>DNS</strong> — Encodes data in DNS queries (DNS tunneling)</li>
+        <li><strong>Social media / Cloud services</strong> — Uses Twitter, GitHub, Pastebin, Google Docs as dead drops</li>
+        <li><strong>Email</strong> — Commands sent via email, responses in drafts</li>
+        <li><strong>ICMP / Custom protocols</strong> — Lower-level network protocols</li>
+      </ul>
+
+      <h3>C2 Indicators</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Indicator</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beaconing</strong></td>
+            <td>Regular, timed connections to external IP (e.g., every 60 seconds)</td>
+          </tr>
+          <tr>
+            <td><strong>Unusual DNS Queries</strong></td>
+            <td>High volume of queries to rare domains, long subdomain names (data exfiltration)</td>
+          </tr>
+          <tr>
+            <td><strong>Long-Lived Connections</strong></td>
+            <td>HTTPS connections lasting hours from non-browser processes</td>
+          </tr>
+          <tr>
+            <td><strong>Domain Generation Algorithms (DGA)</strong></td>
+            <td>Malware generates thousands of random domains daily; only a few are real C2 servers</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Break This Stage</h3>
+      <ul>
+        <li><strong>DNS filtering</strong> — Block known malicious domains, sinkhole DGA traffic</li>
+        <li><strong>Network segmentation</strong> — Limit which systems can reach the internet</li>
+        <li><strong>Proxy inspection</strong> — Decrypt and inspect HTTPS traffic for anomalies</li>
+        <li><strong>Behavioral analysis</strong> — Detect beaconing patterns, unusual connection timing</li>
+        <li><strong>Host-based firewall</strong> — Block outbound connections from unexpected processes</li>
+      </ul>
+
+      <hr>
+
+      <h2>Stage 7: Actions on Objectives</h2>
+      <p>The attacker achieves their goal. This is the "payoff" stage.</p>
+
+      <h3>Common Objectives</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Objective</th>
+            <th>What Happens</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Data Exfiltration</strong></td>
+            <td>Stealing intellectual property, customer data, credentials, emails</td>
+          </tr>
+          <tr>
+            <td><strong>Ransomware Deployment</strong></td>
+            <td>Encrypting files and demanding payment for decryption keys</td>
+          </tr>
+          <tr>
+            <td><strong>Cryptomining</strong></td>
+            <td>Using victim's computing power to mine cryptocurrency</td>
+          </tr>
+          <tr>
+            <td><strong>Lateral Movement</strong></td>
+            <td>Spreading to other systems in the network to expand access</td>
+          </tr>
+          <tr>
+            <td><strong>Destruction</strong></td>
+            <td>Wiping disks, corrupting data (wiper malware)</td>
+          </tr>
+          <tr>
+            <td><strong>Espionage</strong></td>
+            <td>Long-term silent access for intelligence gathering</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Break This Stage</h3>
+      <ul>
+        <li><strong>Data Loss Prevention (DLP)</strong> — Monitor and block unauthorized data transfers</li>
+        <li><strong>Encryption at rest</strong> — Even if data is stolen, it's unreadable without keys</li>
+        <li><strong>Network segmentation</strong> — Prevent lateral movement with VLANs, micro-segmentation</li>
+        <li><strong>Comprehensive logging</strong> — Every action leaves an audit trail for investigation</li>
+        <li><strong>Incident response plan</strong> — Predefined playbooks for containment and recovery</li>
+      </ul>
+
+      <hr>
+
+      <h2>MITRE ATT&CK: The Modern Evolution</h2>
+      <p>The Cyber Kill Chain is excellent for high-level strategic thinking, but modern defenders often use <strong>MITRE ATT&CK</strong> for tactical, detailed analysis.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Framework</th>
+            <th>Focus</th>
+            <th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Cyber Kill Chain</strong></td>
+            <td>Attack stages, strategic defense</td>
+            <td>Executive briefings, investment decisions, high-level IR</td>
+          </tr>
+          <tr>
+            <td><strong>MITRE ATT&CK</strong></td>
+            <td>Specific techniques, tactics, procedures (TTPs)</td>
+            <td>Detection engineering, threat hunting, purple teaming</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>MITRE ATT&CK maps hundreds of specific techniques (like <code>T1059.001</code> for PowerShell) to tactics. As you advance, you'll use both frameworks together: Kill Chain for "where are we in the attack?" and ATT&CK for "what specific technique did they use?"</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">🔗 Resource</div>
+        <p>Explore the full MITRE ATT&CK framework at <a href="https://attack.mitre.org/" target="_blank">attack.mitre.org</a>. It's free, open, and constantly updated by the security community.</p>
+      </div>
+
+      <hr>
+
+      <h2>Hands-On Exercise: Map a Real Incident</h2>
+      <p>Let's practice using the Kill Chain with a simplified version of a real attack.</p>
+
+      <h3>Scenario: The ACME Corp Breach</h3>
+      <p>An attacker compromised ACME Corp and stole customer data. Here's what investigators found:</p>
+
+      <ol>
+        <li>Attacker found ACME's email format from LinkedIn profiles (<strong>Reconnaissance</strong>)</li>
+        <li>Crafted a Word document with a malicious macro that downloads a backdoor (<strong>Weaponization</strong>)</li>
+        <li>Sent spear-phishing email to HR manager with the document (<strong>Delivery</strong>)</li>
+        <li>HR enabled macro; macro exploited Office vulnerability to run PowerShell (<strong>Exploitation</strong>)</li>
+        <li>Backdoor created a scheduled task to run every boot (<strong>Installation</strong>)</li>
+        <li>Backdoor connected to <code>evil-c2.com</code> every 5 minutes via HTTPS (<strong>C2</strong>)</li>
+        <li>Attacker used stolen credentials to access CRM database and exfiltrated 50,000 records (<strong>Actions on Objectives</strong>)</li>
+      </ol>
+
+      <h3>Your Task</h3>
+      <p>For each stage, identify <strong>one defensive control</strong> that could have broken the chain:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Potential Break Point</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reconnaissance</td>
+            <td>Limit employee LinkedIn details; use generic email formats</td>
+          </tr>
+          <tr>
+            <td>Weaponization</td>
+            <td>Block macros from internet-originated files via Group Policy</td>
+          </tr>
+          <tr>
+            <td>Delivery</td>
+            <td>Email gateway with attachment sandboxing</td>
+          </tr>
+          <tr>
+            <td>Exploitation</td>
+            <td>Keep Office fully patched; use Application Guard</td>
+          </tr>
+          <tr>
+            <td>Installation</td>
+            <td>EDR detecting scheduled task creation; standard user accounts</td>
+          </tr>
+          <tr>
+            <td>C2</td>
+            <td>Proxy inspection; DNS filtering of unknown domains</td>
+          </tr>
+          <tr>
+            <td>Actions on Objectives</td>
+            <td>DLP monitoring database access; encryption of customer records</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">🛡️ Key Takeaway</div>
+        <p>Notice how <strong>multiple defenses</strong> could have stopped this at every stage. Defense in depth means not relying on a single control — if email filtering misses it, EDR catches it. If EDR misses it, DLP stops the exfiltration.</p>
+      </div>
+
+      <hr>
+
+      <h2>Summary: The Defender's Advantage</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Attacker Must...</th>
+            <th>Defender Can...</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reconnaissance</td>
+            <td>Find something useful</td>
+            <td>Minimize footprint, detect scanning</td>
+          </tr>
+          <tr>
+            <td>Weaponization</td>
+            <td>Build undetectable malware</td>
+            <td>Use threat intel, block known signatures</td>
+          </tr>
+          <tr>
+            <td>Delivery</td>
+            <td>Get past email/web filters</td>
+            <td>Layered filtering, user training</td>
+          </tr>
+          <tr>
+            <td>Exploitation</td>
+            <td>Find unpatched vulnerabilities</td>
+            <td>Patch rapidly, harden configurations</td>
+          </tr>
+          <tr>
+            <td>Installation</td>
+            <td>Establish stealthy persistence</td>
+            <td>Monitor critical locations, use least privilege</td>
+          </tr>
+          <tr>
+            <td>C2</td>
+            <td>Maintain covert communication</td>
+            <td>Inspect traffic, detect anomalies</td>
+          </tr>
+          <tr>
+            <td>Actions</td>
+            <td>Complete mission without detection</td>
+            <td>Log everything, encrypt data, segment network</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What's Next?</h2>
+      <p>In the next post, we'll dive into <strong>"Passive Reconnaissance: What Attackers See"</strong> — the techniques used in Stage 1 of the Kill Chain. We'll practice OSINT on our own lab environment and learn how to minimize our digital footprint.</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📬 Questions?</div>
+        <p>Which stage of the Kill Chain do you think is hardest to defend? Drop your answer below — there's no single right answer, and the discussion is where real learning happens.</p>
+      </div>
+
+    </article>
+
+    <!-- Series Navigation -->
+    <div class="series-nav" id="series">
+      <div class="series-title">📚 Beginner Series</div>
+      <ol class="series-list">
+        <li>
+          <a href="index.html">
+            <span>Setting Up Your First Cybersecurity Home Lab</span>
+            <span class="series-number">#1 ✓</span>
+          </a>
+        </li>
+        <li>
+          <a href="post-2-kill-chain.html" class="series-current">
+            <span>The Cyber Kill Chain: How Attacks Actually Happen</span>
+            <span class="series-number">#2</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Passive Reconnaissance: What Attackers See</span>
+            <span class="series-number">#3</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Active Scanning with Nmap</span>
+            <span class="series-number">#4</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Social Engineering: The Human Vulnerability</span>
+            <span class="series-number">#5</span>
+          </a>
+        </li>
+      </ol>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">CyberSec From Scratch — Educational cybersecurity content.</p>
+      <p class="footer-text" style="margin-top: 0.5rem; font-size: 0.8rem;">Built with ❤️ on GitHub Pages.</p>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="#series">Series</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="#">RSS</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
