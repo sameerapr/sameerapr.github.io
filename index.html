@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setting Up Your First Cybersecurity Home Lab | CyberSec From Scratch</title>
+  <meta name="description" content="Build a free, isolated cybersecurity home lab with VirtualBox, Kali Linux, and Windows VMs. Learn safely and legally.">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand">CyberSec From Scratch</a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="#series">Series</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="https://github.com/yourusername" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>CyberSec From Scratch</h1>
+      <p class="hero-subtitle">Understanding attacks to build better defenses.</p>
+      <div class="hero-tagline">Educational cybersecurity content for beginners and beyond.</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Post Header -->
+    <header class="post-header">
+      <h1 class="post-title">Setting Up Your First Cybersecurity Home Lab: The Safe Way to Learn</h1>
+      <div class="post-meta">
+        <span>📅 August 12, 2026</span>
+        <span>⏱️ 25 min read</span>
+        <span>🏷️ Beginner</span>
+        <span>👤 Your Name</span>
+      </div>
+      <div class="post-tags">
+        <span class="tag">#homelab</span>
+        <span class="tag">#virtualbox</span>
+        <span class="tag">#kali</span>
+        <span class="tag">#cybersecurity</span>
+        <span class="tag">#infosec</span>
+      </div>
+    </header>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <div class="disclaimer-title">⚠️ EDUCATIONAL DISCLAIMER</div>
+      <p>This guide is for learning cybersecurity in a <strong>controlled, isolated environment only</strong>. Never practice attack techniques on systems you do not own or have explicit written permission to test. Unauthorized access to computer systems is illegal under the Computer Fraud and Abuse Act (US), the Computer Misuse Act (UK), and similar laws worldwide. The author assumes no liability for misuse of this information.</p>
+    </div>
+
+    <!-- Post Content -->
+    <article class="post-content">
+
+      <h2>Why You Need a Lab</h2>
+      <p>Reading about attacks is one thing. <strong>Seeing them happen</strong> in a safe environment is how real learning happens. A home lab lets you:</p>
+      <ul>
+        <li>Practice reconnaissance, exploitation, and forensics <strong>without breaking laws</strong></li>
+        <li>Test detection rules and defensive tools before deploying them at work</li>
+        <li>Understand malware behavior by observing it in a sandbox</li>
+        <li>Prepare for certifications like CompTIA Security+, CEH, OSCP, or eJPT</li>
+      </ul>
+      <p>Think of it as a flight simulator for cybersecurity. You can crash the plane here — safely.</p>
+
+      <h2>What We're Building Today</h2>
+      <p>By the end of this guide, you will have:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>VirtualBox</strong> (or VMware)</td>
+            <td>Free hypervisor to run virtual machines</td>
+          </tr>
+          <tr>
+            <td><strong>Kali Linux VM</strong></td>
+            <td>Your attack/analysis machine (pre-loaded with 600+ tools)</td>
+          </tr>
+          <tr>
+            <td><strong>Windows 10/11 VM</strong></td>
+            <td>Your target/victim machine for testing</td>
+          </tr>
+          <tr>
+            <td><strong>Ubuntu Server VM</strong> <em>(optional)</em></td>
+            <td>Practice Linux hardening and log analysis</td>
+          </tr>
+          <tr>
+            <td><strong>Isolated Network</strong></td>
+            <td>Ensures lab traffic never leaks to your home network</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">💡 Pro Tip</div>
+        <p><strong>Total cost: $0</strong> — all software listed here is free for personal and educational use.</p>
+      </div>
+
+      <h2>Step 1: Check Your Hardware</h2>
+      <p>Virtual machines share your physical computer's resources. Here's the minimum and recommended specs:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Resource</th>
+            <th>Minimum</th>
+            <th>Recommended</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>RAM</strong></td>
+            <td>8 GB total</td>
+            <td>16 GB+ total</td>
+          </tr>
+          <tr>
+            <td><strong>Storage</strong></td>
+            <td>100 GB free SSD space</td>
+            <td>250 GB+ SSD</td>
+          </tr>
+          <tr>
+            <td><strong>CPU</strong></td>
+            <td>4-core (with VT-x/AMD-V)</td>
+            <td>6-core+ modern processor</td>
+          </tr>
+          <tr>
+            <td><strong>OS</strong></td>
+            <td>Windows 10/11, macOS, or Linux</td>
+            <td>Any 64-bit OS</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Check Virtualization Support</h3>
+      <p><strong>Windows:</strong> Open Task Manager → Performance → CPU → look for <strong>"Virtualization: Enabled"</strong></p>
+      <p>If disabled, enable <strong>Intel VT-x</strong> or <strong>AMD-V</strong> in your BIOS/UEFI settings before proceeding.</p>
+
+      <h2>Step 2: Install a Hypervisor</h2>
+      <p>A hypervisor lets you run multiple operating systems simultaneously as virtual machines (VMs).</p>
+
+      <h3>Option A: VirtualBox (Free, Open Source, Cross-Platform)</h3>
+      <ol>
+        <li>Download from: <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank">virtualbox.org/wiki/Downloads</a></li>
+        <li>Download the <strong>Extension Pack</strong> (same page)</li>
+        <li>Install VirtualBox, then double-click the Extension Pack to install it</li>
+      </ol>
+
+      <h3>Option B: VMware Workstation Player (Free for Personal Use)</h3>
+      <ol>
+        <li>Download from: <a href="https://www.vmware.com/products/workstation-player.html" target="_blank">vmware.com/products/workstation-player</a></li>
+        <li>Install with default settings</li>
+      </ol>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📝 Recommendation</div>
+        <p>Start with <strong>VirtualBox</strong> — completely free, open-source, and largest community support.</p>
+      </div>
+
+      <h2>Step 3: Download Your Operating Systems</h2>
+
+      <h3>Kali Linux (Offensive Security)</h3>
+      <ol>
+        <li>Go to: <a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">kali.org/get-kali</a></li>
+        <li>Download the <strong>VirtualBox 64-bit image</strong> (pre-built VM, ~3 GB)</li>
+        <li>Extract the <code>.7z</code> file using 7-Zip</li>
+      </ol>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">💡 Pro Tip</div>
+        <p>Pre-built VMs come with Guest Additions pre-installed — faster than ISO install.</p>
+      </div>
+
+      <h3>Windows 10/11 Evaluation (Target Machine)</h3>
+      <ol>
+        <li>Go to: <a href="https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/" target="_blank">developer.microsoft.com</a></li>
+        <li>Download the <strong>VirtualBox</strong> version of Windows dev environment</li>
+        <li>Or use ISO from <a href="https://www.microsoft.com/software-download/windows10" target="_blank">microsoft.com</a></li>
+      </ol>
+
+      <div class="info-box warning-box">
+        <div class="info-box-title">⚠️ Important</div>
+        <p>Evaluation VMs expire after 90 days. For permanent lab, use an ISO with a valid license key.</p>
+      </div>
+
+      <h3>Ubuntu Server (Optional)</h3>
+      <ol>
+        <li>Download from: <a href="https://ubuntu.com/download/server" target="_blank">ubuntu.com/download/server</a></li>
+        <li>Download the LTS ISO (~2 GB)</li>
+      </ol>
+
+      <h2>Step 4: Import and Configure Kali Linux</h2>
+
+      <h3>Import the Pre-Built VM</h3>
+      <ol>
+        <li>Open VirtualBox → <strong>File → Import Appliance</strong></li>
+        <li>Select the extracted <code>.ova</code> file</li>
+        <li>Click through import wizard</li>
+      </ol>
+
+      <h3>Configure Kali VM Settings</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Setting</th>
+            <th>Value</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>System → Base Memory</strong></td>
+            <td>4096 MB (4 GB)</td>
+            <td>Kali needs RAM for multiple tools</td>
+          </tr>
+          <tr>
+            <td><strong>System → Processors</strong></td>
+            <td>2 CPUs</td>
+            <td>Balance performance vs host stability</td>
+          </tr>
+          <tr>
+            <td><strong>Display → Video Memory</strong></td>
+            <td>128 MB</td>
+            <td>Improves GUI responsiveness</td>
+          </tr>
+          <tr>
+            <td><strong>Network → Adapter 1</strong></td>
+            <td>NAT</td>
+            <td>Internet access for updates</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>To edit:</strong> Right-click VM → Settings → adjust → OK.</p>
+
+      <h3>First Boot and Update</h3>
+      <ol>
+        <li>Start Kali VM</li>
+        <li>Default credentials: <code>kali</code> / <code>kali</code></li>
+        <li>Open terminal and run:</li>
+      </ol>
+
+<pre data-lang="bash"><code># Update the package list
+sudo apt update
+
+# Upgrade all installed packages
+sudo apt full-upgrade -y
+
+# Clean up
+sudo apt autoremove -y</code></pre>
+
+      <p>This may take 30–60 minutes. Grab coffee.</p>
+
+      <h2>Step 5: Set Up Your Windows Target VM</h2>
+
+      <h3>If Using Pre-Built Microsoft VM</h3>
+      <ol>
+        <li>Import the <code>.ova</code> like you did with Kali</li>
+        <li>Adjust: 4 GB RAM, 2 CPUs, 128 MB video</li>
+        <li>Start VM and let it boot</li>
+      </ol>
+
+      <h3>If Installing from ISO</h3>
+      <ol>
+        <li>VirtualBox → <strong>New</strong></li>
+        <li>Name: "Windows-10-Lab", Type: "Microsoft Windows", Version: "Windows 10 (64-bit)"</li>
+        <li>4 GB RAM, 60 GB VDI (dynamically allocated)</li>
+        <li>Start VM, select ISO, complete install</li>
+      </ol>
+
+      <h3>Post-Installation: Make Windows "Vulnerable" (Safely)</h3>
+
+      <div class="info-box warning-box">
+        <div class="info-box-title">⚠️ Critical Warning</div>
+        <p>Do <strong>NOT</strong> do this on a real production machine. This VM must never leave your isolated lab network.</p>
+      </div>
+
+      <ol>
+        <li><strong>Create a snapshot first!</strong> (Machine → Take Snapshot → "Clean Install")</li>
+        <li>Disable Windows Defender (Settings → Update & Security → Windows Security → Manage settings → toggle off)</li>
+        <li>Enable file and printer sharing</li>
+        <li>Install <strong>DVWA</strong> or <strong>BadStore</strong> for web app testing</li>
+      </ol>
+
+      <h2>Step 6: Create an Isolated Lab Network</h2>
+      <p>This is the <strong>most important step</strong> for safety. Your VMs should talk to each other, but never leak to your home network.</p>
+
+      <h3>VirtualBox Network Modes Explained</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>VM → Internet</th>
+            <th>VM ↔ Host</th>
+            <th>VM ↔ VM</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>NAT</strong></td>
+            <td>✅ Yes</td>
+            <td>❌ No</td>
+            <td>❌ No</td>
+            <td>Safe browsing, updates</td>
+          </tr>
+          <tr>
+            <td><strong>Bridged</strong></td>
+            <td>✅ Yes</td>
+            <td>✅ Yes</td>
+            <td>✅ Yes</td>
+            <td><em>Avoid for labs</em></td>
+          </tr>
+          <tr>
+            <td><strong>Internal Network</strong></td>
+            <td>❌ No</td>
+            <td>❌ No</td>
+            <td>✅ Yes</td>
+            <td><strong>Best for isolation</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Host-Only</strong></td>
+            <td>❌ No</td>
+            <td>✅ Yes</td>
+            <td>✅ Yes</td>
+            <td>VM talks to host only</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Recommended Lab Configuration</h3>
+
+      <p><strong>Kali Linux VM:</strong></p>
+      <ul>
+        <li><strong>Adapter 1:</strong> NAT (internet access)</li>
+        <li><strong>Adapter 2:</strong> Internal Network, name: <code>Lab-Network</code> (attacking targets)</li>
+      </ul>
+
+      <p><strong>Windows Target VM:</strong></p>
+      <ul>
+        <li><strong>Adapter 1:</strong> Internal Network, name: <code>Lab-Network</code> (isolated)</li>
+      </ul>
+
+      <h3>How to Configure</h3>
+      <p><strong>Kali VM → Settings → Network:</strong></p>
+      <ul>
+        <li>Adapter 1: Attached to <strong>NAT</strong></li>
+        <li>Adapter 2: Enable, Attached to <strong>Internal Network</strong>, Name: <code>Lab-Network</code></li>
+      </ul>
+
+      <p><strong>Windows VM → Settings → Network:</strong></p>
+      <ul>
+        <li>Adapter 1: Attached to <strong>Internal Network</strong>, Name: <code>Lab-Network</code></li>
+      </ul>
+
+      <p><strong>Static IPs</strong> (no DHCP on internal network):</p>
+      <ul>
+        <li><strong>Kali (Adapter 2):</strong> <code>192.168.56.10/24</code></li>
+        <li><strong>Windows:</strong> <code>192.168.56.20/24</code>, Gateway: <code>192.168.56.10</code></li>
+      </ul>
+
+      <h3>Setting a Static IP in Kali</h3>
+
+<pre data-lang="bash"><code># Check interface name
+ip addr
+
+# Edit network config
+sudo nano /etc/network/interfaces</code></pre>
+
+      <p>Add:</p>
+
+<pre data-lang="bash"><code>auto eth1
+iface eth1 inet static
+    address 192.168.56.10
+    netmask 255.255.255.0</code></pre>
+
+      <p>Restart networking:</p>
+
+<pre data-lang="bash"><code>sudo systemctl restart networking</code></pre>
+
+      <h3>Setting a Static IP in Windows</h3>
+      <ol>
+        <li>Settings → Network & Internet → Change adapter options</li>
+        <li>Right-click Ethernet → Properties → IPv4 Properties</li>
+        <li>IP: <code>192.168.56.20</code>, Subnet: <code>255.255.255.0</code>, Gateway: <code>192.168.56.10</code></li>
+      </ol>
+
+      <h3>Verify Connectivity</h3>
+      <p>From Kali:</p>
+
+<pre data-lang="bash"><code>ping 192.168.56.20</code></pre>
+
+      <p>From Windows:</p>
+
+<pre data-lang="cmd"><code>ping 192.168.56.10</code></pre>
+
+      <p>If both succeed, your isolated lab network is working.</p>
+
+      <h2>Step 7: Essential Lab Hygiene</h2>
+
+      <h3>1. Snapshots Are Your Best Friend</h3>
+      <p>Before running any exploit, take a snapshot. Revert in seconds if something breaks.</p>
+      <ul>
+        <li><strong>VirtualBox:</strong> Machine → Take Snapshot</li>
+        <li><strong>VMware:</strong> VM → Snapshot → Take Snapshot</li>
+      </ul>
+
+      <h3>2. Never Bridge to Your Home Network During Attacks</h3>
+      <p>Bridged mode exposes your VM to your LAN. You could accidentally scan your router, smart TV, or family's phones. Always double-check network settings.</p>
+
+      <h3>3. Disable Copy-Paste for High-Risk VMs</h3>
+      <p>If analyzing malware:</p>
+      <ul>
+        <li>VM Settings → General → Advanced → Shared Clipboard: <strong>Disabled</strong></li>
+        <li>Drag'n'Drop: <strong>Disabled</strong></li>
+      </ul>
+
+      <h3>4. Keep Your Host Machine Updated</h3>
+      <p>Your host OS is the last line of defense. Patch it, firewall it, antivirus it. Hypervisor escapes are rare but real.</p>
+
+      <h2>Step 8: First Lab Exercise — Verify Your Setup</h2>
+      <p>Let's confirm everything works with a safe, legal exercise.</p>
+
+      <h3>Exercise: Port Scan Your Target (You Own It)</h3>
+      <ol>
+        <li>Boot both VMs</li>
+        <li>On Kali, open a terminal</li>
+        <li>Run Nmap against your Windows target:</li>
+      </ol>
+
+<pre data-lang="bash"><code>nmap -sV -O 192.168.56.20</code></pre>
+
+      <p><strong>What this does:</strong></p>
+      <ul>
+        <li><code>-sV</code> = Detect service versions on open ports</li>
+        <li><code>-O</code> = Attempt OS detection</li>
+        <li><code>192.168.56.20</code> = Your Windows target IP</li>
+      </ul>
+
+      <p><strong>Expected output:</strong> Open ports (135, 139, 445 for SMB), service versions, OS guess.</p>
+
+      <p><strong>What you learned:</strong></p>
+      <ul>
+        <li>How attackers map networks</li>
+        <li>Default Windows services that are exposed</li>
+        <li>Why disabling unnecessary services matters</li>
+      </ul>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">🛡️ Defensive Takeaway</div>
+        <p>Ports 135, 139, 445 are normal for Windows — but on a public server, these should be firewalled. Defenders use this same scan to audit their own networks.</p>
+      </div>
+
+      <h2>Step 9: Expanding Your Lab</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Addition</th>
+            <th>Purpose</th>
+            <th>How</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>pfSense VM</strong></td>
+            <td>Firewall rules, VLANs, IDS/IPS</td>
+            <td>Download pfSense ISO, install as VM</td>
+          </tr>
+          <tr>
+            <td><strong>Ubuntu Server + ELK</strong></td>
+            <td>Build a SIEM for log analysis</td>
+            <td>Install Elasticsearch, Logstash, Kibana</td>
+          </tr>
+          <tr>
+            <td><strong>Metasploitable 2</strong></td>
+            <td>Intentionally vulnerable Linux target</td>
+            <td>Download from SourceForge</td>
+          </tr>
+          <tr>
+            <td><strong>Active Directory Lab</strong></td>
+            <td>Domain attacks and defenses</td>
+            <td>Windows Server + 2 Windows clients</td>
+          </tr>
+          <tr>
+            <td><strong>FLARE VM</strong></td>
+            <td>Windows malware analysis</td>
+            <td>Install on Windows VM from fireeye.com</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Troubleshooting Common Issues</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Problem</th>
+            <th>Solution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>"VT-x is not available"</td>
+            <td>Enable virtualization in BIOS/UEFI</td>
+          </tr>
+          <tr>
+            <td>VMs are very slow</td>
+            <td>Allocate less RAM, or upgrade physical RAM</td>
+          </tr>
+          <tr>
+            <td>No internet in Kali</td>
+            <td>Check Adapter 1 is NAT, not Internal Network</td>
+          </tr>
+          <tr>
+            <td>Can't ping between VMs</td>
+            <td>Same Internal Network name; check Windows Firewall</td>
+          </tr>
+          <tr>
+            <td>Resolution stuck at 800x600</td>
+            <td>Install VirtualBox Guest Additions</td>
+          </tr>
+          <tr>
+            <td>Windows evaluation expired</td>
+            <td>Snapshot before expiry, or reinstall</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Lab Rules to Live By</h2>
+      <ol>
+        <li><strong>Isolate first, attack second.</strong> Verify network settings before running scans or exploits.</li>
+        <li><strong>Snapshot everything.</strong> 10-second snapshot saves hours of reinstallation.</li>
+        <li><strong>Never test outside your lab.</strong> Home router, neighbor's Wi-Fi, public websites = off-limits.</li>
+        <li><strong>Document what you learn.</strong> Keep a lab notebook of commands, outputs, and lessons.</li>
+        <li><strong>Think defensively.</strong> For every attack, ask: <em>"How would I detect or prevent this?"</em></li>
+      </ol>
+
+      <h2>Resources & Downloads</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Resource</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>VirtualBox</td>
+            <td><a href="https://www.virtualbox.org/wiki/Downloads" target="_blank">virtualbox.org</a></td>
+          </tr>
+          <tr>
+            <td>Kali Linux VMs</td>
+            <td><a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank">kali.org</a></td>
+          </tr>
+          <tr>
+            <td>Windows Eval VMs</td>
+            <td><a href="https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/" target="_blank">developer.microsoft.com</a></td>
+          </tr>
+          <tr>
+            <td>Metasploitable 2</td>
+            <td><a href="https://sourceforge.net/projects/metasploitable/" target="_blank">sourceforge.net</a></td>
+          </tr>
+          <tr>
+            <td>pfSense</td>
+            <td><a href="https://www.pfsense.org/download/" target="_blank">pfsense.org</a></td>
+          </tr>
+          <tr>
+            <td>7-Zip</td>
+            <td><a href="https://www.7-zip.org/" target="_blank">7-zip.org</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>What's Next?</h2>
+      <p>In the next post, we'll cover <strong>"The Cyber Kill Chain: How Attacks Actually Happen"</strong> — understanding the reconnaissance → weaponization → delivery → exploitation → installation → C2 → actions on objectives flow. This mental model will guide every technique you learn in this lab.</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📬 Questions?</div>
+        <p>Drop them in the comments or open an issue on GitHub. Paste exact error messages — the cybersecurity community thrives on detailed troubleshooting.</p>
+      </div>
+
+    </article>
+
+    <!-- Series Navigation -->
+    <div class="series-nav" id="series">
+      <div class="series-title">📚 Beginner Series</div>
+      <ol class="series-list">
+        <li>
+          <a href="/" class="series-current">
+            <span>Setting Up Your First Cybersecurity Home Lab</span>
+            <span class="series-number">#1</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>The Cyber Kill Chain: How Attacks Actually Happen</span>
+            <span class="series-number">#2</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Passive Reconnaissance: What Attackers See</span>
+            <span class="series-number">#3</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Active Scanning with Nmap</span>
+            <span class="series-number">#4</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Social Engineering: The Human Vulnerability</span>
+            <span class="series-number">#5</span>
+          </a>
+        </li>
+      </ol>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">CyberSec From Scratch — Educational cybersecurity content.</p>
+      <p class="footer-text" style="margin-top: 0.5rem; font-size: 0.8rem;">Built with ❤️ on GitHub Pages.</p>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="#series">Series</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="#">RSS</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

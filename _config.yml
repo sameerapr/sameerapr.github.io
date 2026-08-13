@@ -1,0 +1,31 @@
+# Site settings
+title: "CyberSec From Scratch"
+description: >-
+  Understanding attacks to build better defenses.
+  Educational cybersecurity content for beginners and beyond.
+baseurl: "" # Leave empty for username.github.io repo
+url: "https://yourusername.github.io"
+author: "Your Name"
+email: your.email@example.com
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Pagination
+paginate: 5
+paginate_path: "/page:num/"
+
+# Social links (optional)
+github_username: yourusername
+twitter_username: yourhandle
+
+# Exclude files
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
