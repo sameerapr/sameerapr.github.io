@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active Scanning with Nmap | CyberSec From Scratch</title>
+  <meta name="description" content="Master Nmap for network discovery and security auditing. Learn scan types, NSE scripts, and how defenders detect and respond to port scans.">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">CyberSec From Scratch</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#series">Series</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="https://github.com/yourusername" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>CyberSec From Scratch</h1>
+      <p class="hero-subtitle">Understanding attacks to build better defenses.</p>
+      <div class="hero-tagline">Educational cybersecurity content for beginners and beyond.</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Post Header -->
+    <header class="post-header">
+      <h1 class="post-title">Active Scanning with Nmap</h1>
+      <div class="post-meta">
+        <span>📅 September 3, 2026</span>
+        <span>⏱️ 28 min read</span>
+        <span>🏷️ Beginner</span>
+        <span>👤 Your Name</span>
+      </div>
+      <div class="post-tags">
+        <span class="tag">#nmap</span>
+        <span class="tag">#scanning</span>
+        <span class="tag">#network</span>
+        <span class="tag">#reconnaissance</span>
+        <span class="tag">#cybersecurity</span>
+      </div>
+    </header>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <div class="disclaimer-title">⚠️ EDUCATIONAL DISCLAIMER</div>
+      <p>Nmap is a legitimate network security scanner used by millions of professionals worldwide. However, <strong>scanning networks you do not own or have explicit written permission to test is illegal</strong> in most jurisdictions. This guide covers Nmap from both offensive and defensive perspectives. All exercises should be performed only in your isolated lab environment from Post #1.</p>
+    </div>
+
+    <!-- Post Content -->
+    <article class="post-content">
+
+      <h2>From Passive to Active</h2>
+      <p>In <a href="post-3-reconnaissance.html">Post #3</a>, we covered passive reconnaissance — gathering intelligence without ever touching the target's systems. Now we cross the line into <strong>active reconnaissance</strong>: sending packets directly to the target and analyzing the responses.</p>
+
+      <p>This is where things get real. Active scanning generates logs, triggers alerts, and can be detected by intrusion detection systems. It's also where most attackers begin their technical engagement — and where defenders have their first real opportunity to spot an intruder.</p>
+
+      <p><strong>Nmap</strong> (Network Mapper) is the gold standard for active network scanning. Created by Gordon Lyon (Fyodor) in 1997, it's free, open-source, and installed by default on Kali Linux. Over 25 years of development have made it the most powerful and flexible port scanner in existence.</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📝 Key Distinction</div>
+        <p><strong>Passive recon</strong> = no packets to target, completely invisible.<br><strong>Active scanning</strong> = packets sent to target, detectable and loggable. This is Stage 1 (Reconnaissance) of the Kill Chain turning technical.</p>
+      </div>
+
+      <h2>How Port Scanning Works</h2>
+      <p>Before diving into Nmap commands, you need to understand what happens under the hood when you scan a port.</p>
+
+      <h3>The TCP Three-Way Handshake</h3>
+      <p>TCP (Transmission Control Protocol) requires a three-step handshake to establish a connection:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Packet</th>
+            <th>Flag</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Client → Server</td>
+            <td><code>SYN</code></td>
+            <td>"I want to connect"</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Server → Client</td>
+            <td><code>SYN-ACK</code></td>
+            <td>"I received your request, I'm ready"</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Client → Server</td>
+            <td><code>ACK</code></td>
+            <td>"Acknowledged, connection established"</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Nmap exploits this handshake (and deviations from it) to determine port states.</p>
+
+      <h3>Port States</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>State</th>
+            <th>What It Means</th>
+            <th>Security Implication</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>open</strong></td>
+            <td>Service is listening and accepting connections</td>
+            <td>Potential attack surface — investigate the service</td>
+          </tr>
+          <tr>
+            <td><strong>closed</strong></td>
+            <td>Port is accessible but no service is listening</td>
+            <td>Less risk, but still visible to attackers</td>
+          </tr>
+          <tr>
+            <td><strong>filtered</strong></td>
+            <td>Nmap can't determine state — likely blocked by firewall</td>
+            <td>Good defense, but reveals firewall presence</td>
+          </tr>
+          <tr>
+            <td><strong>unfiltered</strong></td>
+            <td>Port is accessible but Nmap can't determine open/closed</td>
+            <td>Rare, usually seen with ACK scans</td>
+          </tr>
+          <tr>
+            <td><strong>open|filtered</strong></td>
+            <td>Nmap can't distinguish between open and filtered</td>
+            <td>Common with UDP scans or FIN/NULL/Xmas scans</td>
+          </tr>
+          <tr>
+            <td><strong>closed|filtered</strong></td>
+            <td>Nmap can't distinguish between closed and filtered</td>
+            <td>Rare, seen with certain IDS evasion scans</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Nmap Basics: Your First Scans</h2>
+      <p>Open a terminal on your Kali VM (from Post #1) and ensure your Windows target VM is running on the isolated <code>Lab-Network</code>.</p>
+
+      <h3>Scan 1: Simple Ping Sweep</h3>
+      <p>Before scanning ports, confirm the target is online.</p>
+
+<pre data-lang="bash"><code># Ping scan — check if host is up (no port scanning)
+nmap -sn 192.168.56.20
+
+# Ping sweep a range of IPs
+nmap -sn 192.168.56.1-254
+
+# Alternative: ARP ping (more reliable on local networks)
+nmap -sn -PR 192.168.56.20</code></pre>
+
+      <p><strong>Output explained:</strong></p>
+      <ul>
+        <li><code>Host is up (0.00045s latency)</code> — target responded to ping</li>
+        <li><code>MAC Address: 08:00:27:xx:xx:xx</code> — VirtualBox virtual NIC identifier</li>
+      </ul>
+
+      <h3>Scan 2: Default Port Scan</h3>
+      <p>Nmap's default scan checks the top 1,000 most common ports.</p>
+
+<pre data-lang="bash"><code># Default scan (top 1000 TCP ports)
+nmap 192.168.56.20
+
+# Scan with verbosity
+nmap -v 192.168.56.20</code></pre>
+
+      <p><strong>What happens:</strong> Nmap sends SYN packets to each port. If it receives SYN-ACK, the port is open. If it receives RST, the port is closed. If nothing comes back, it's filtered.</p>
+
+      <h3>Scan 3: Scan All Ports</h3>
+      <p>There are 65,535 TCP ports. The default 1,000 covers the most common services, but malware and custom apps often hide on high ports.</p>
+
+<pre data-lang="bash"><code># Scan all 65535 TCP ports (slow but thorough)
+nmap -p- 192.168.56.20
+
+# Scan specific ports
+nmap -p 22,80,443,3389 192.168.56.20
+
+# Scan a port range
+nmap -p 1-1000 192.168.56.20</code></pre>
+
+      <div class="info-box warning-box">
+        <div class="info-box-title">⚠️ Time Warning</div>
+        <p>Scanning all 65,535 ports can take 30+ minutes per host. In a real engagement, start with the top 1,000, then expand based on findings. In your lab, feel free to run full scans to see the difference.</p>
+      </div>
+
+      <hr>
+
+      <h2>Nmap Scan Types: The Complete Toolkit</h2>
+      <p>Nmap offers multiple scan types, each with different speed, stealth, and reliability characteristics. Understanding them is essential for both attackers and defenders.</p>
+
+      <h3>1. TCP Connect Scan (<code>-sT</code>)</h3>
+      <p>Completes the full three-way handshake on every port. The most reliable but also the noisiest and slowest.</p>
+
+<pre data-lang="bash"><code># TCP Connect scan
+nmap -sT 192.168.56.20</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Pros</th>
+            <th>Cons</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Works on all systems (no raw packet privileges needed)</td>
+            <td>Very noisy — full handshake logged by target</td>
+          </tr>
+          <tr>
+            <td>Most accurate and reliable</td>
+            <td>Slower than SYN scan</td>
+          </tr>
+          <tr>
+            <td>Can scan through proxies</td>
+            <td>Easily detected by IDS/IPS</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>2. SYN Stealth Scan (<code>-sS</code>) — The Default</h3>
+      <p>Sends SYN, waits for SYN-ACK, then sends RST instead of completing the handshake. Faster and stealthier than connect scan.</p>
+
+<pre data-lang="bash"><code># SYN stealth scan (default when run as root)
+sudo nmap -sS 192.168.56.20</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Pros</th>
+            <th>Cons</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Faster than connect scan (half-open)</td>
+            <td>Requires root/admin privileges (raw packets)</td>
+          </tr>
+          <tr>
+            <td>Stealthier — no full connection logged</td>
+            <td>Still detectable by modern IDS</td>
+          </tr>
+          <tr>
+            <td>Default and most commonly used</td>
+            <td>Some firewalls block incomplete handshakes</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>3. UDP Scan (<code>-sU</code>)</h3>
+      <p>UDP is connectionless — no handshake. Nmap sends UDP packets and interprets ICMP responses or lack thereof.</p>
+
+<pre data-lang="bash"><code># UDP scan (very slow — use top ports)
+sudo nmap -sU --top-ports 100 192.168.56.20
+
+# UDP scan specific ports
+sudo nmap -sU -p 53,67,68,123,161,500 192.168.56.20</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Pros</th>
+            <th>Cons</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Finds UDP services (DNS, DHCP, SNMP, NTP)</td>
+            <td>Extremely slow (no response = timeout)</td>
+          </tr>
+          <tr>
+            <td>Often overlooked by defenders</td>
+            <td>Many results show as open|filtered</td>
+          </tr>
+          <tr>
+            <td>Critical for comprehensive assessment</td>
+            <td>Requires root privileges</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>4. FIN, NULL, and Xmas Scans (<code>-sF</code>, <code>-sN</code>, <code>-sX</code>)</h3>
+      <p>These send malformed packets to exploit differences in RFC compliance between operating systems. Named because the Xmas scan sets FIN, PSH, and URG flags — "lighting up the packet like a Christmas tree."</p>
+
+<pre data-lang="bash"><code># FIN scan
+sudo nmap -sF 192.168.56.20
+
+# NULL scan (no flags set)
+sudo nmap -sN 192.168.56.20
+
+# Xmas scan
+sudo nmap -sX 192.168.56.20</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Pros</th>
+            <th>Cons</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Can bypass simple firewalls that only block SYN</td>
+            <td>Only works reliably against Unix/Linux targets</td>
+          </tr>
+          <tr>
+            <td>Stealthy against basic logging</td>
+            <td>Windows always responds RST (all ports show closed)</td>
+          </tr>
+          <tr>
+            <td>Interesting for OS fingerprinting</td>
+            <td>Easily detected by modern IDS</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>5. ACK Scan (<code>-sA</code>)</h3>
+      <p>Sends ACK packets to map firewall rulesets. Doesn't determine open/closed ports, but reveals whether ports are filtered or unfiltered.</p>
+
+<pre data-lang="bash"><code># ACK scan — map firewall rules
+sudo nmap -sA 192.168.56.20</code></pre>
+
+      <h3>6. Window Scan (<code>-sW</code>) and Maimon Scan (<code>-sM</code>)</h3>
+      <p>Niche scans that exploit specific TCP window size behaviors in certain operating systems. Rarely used in practice but good to know they exist.</p>
+
+      <h3>Scan Type Comparison Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Scan Type</th>
+            <th>Flag</th>
+            <th>Speed</th>
+            <th>Stealth</th>
+            <th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TCP Connect</td>
+            <td><code>-sT</code></td>
+            <td>Slow</td>
+            <td>Low</td>
+            <td>When you lack root access</td>
+          </tr>
+          <tr>
+            <td>SYN Stealth</td>
+            <td><code>-sS</code></td>
+            <td>Fast</td>
+            <td>Medium</td>
+            <td>Default choice for most scans</td>
+          </tr>
+          <tr>
+            <td>UDP</td>
+            <td><code>-sU</code></td>
+            <td>Very Slow</td>
+            <td>Medium</td>
+            <td>Finding UDP services</td>
+          </tr>
+          <tr>
+            <td>FIN/NULL/Xmas</td>
+            <td><code>-sF/-sN/-sX</code></td>
+            <td>Medium</td>
+            <td>Medium</td>
+            <td>Bypassing simple firewalls (Linux targets)</td>
+          </tr>
+          <tr>
+            <td>ACK</td>
+            <td><code>-sA</code></td>
+            <td>Fast</td>
+            <td>Medium</td>
+            <td>Firewall rule mapping</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Service Detection & Version Scanning</h2>
+      <p>Finding an open port is only the beginning. Knowing <strong>what service</strong> is running and <strong>what version</strong> tells you whether it's vulnerable to known exploits.</p>
+
+      <h3>Service Version Detection (<code>-sV</code>)</h3>
+
+<pre data-lang="bash"><code># Detect service versions on open ports
+nmap -sV 192.168.56.20
+
+# Aggressive version detection (more accurate, slower)
+nmap -sV --version-intensity 5 192.168.56.20
+
+# Light version detection (faster, less accurate)
+nmap -sV --version-intensity 0 192.168.56.20</code></pre>
+
+      <p><strong>Output example:</strong></p>
+
+<pre data-lang="bash"><code>PORT     STATE SERVICE       VERSION
+135/tcp  open  msrpc         Microsoft Windows RPC
+139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp  open  microsoft-ds  Windows 10 Pro 19045 microsoft-ds
+3389/tcp open  ms-wbt-server Microsoft Terminal Services</code></pre>
+
+      <h3>OS Detection (<code>-O</code>)</h3>
+      <p>Nmap sends a series of crafted TCP and UDP packets, then compares the responses against a database of known OS fingerprints.</p>
+
+<pre data-lang="bash"><code># Operating system detection
+sudo nmap -O 192.168.56.20
+
+# Limit OS detection to one guess (faster)
+sudo nmap -O --osscan-limit 192.168.56.20</code></pre>
+
+      <p><strong>Output example:</strong></p>
+
+<pre data-lang="bash"><code>Running: Microsoft Windows 10|2016|2019
+OS CPE: cpe:/o:microsoft:windows_10
+OS details: Microsoft Windows 10 1903 - 2004</code></pre>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">💡 Pro Tip</div>
+        <p>Combine scans for efficiency: <code>sudo nmap -sS -sV -O 192.168.56.20</code> runs SYN stealth scan + version detection + OS fingerprinting in one pass.</p>
+      </div>
+
+      <hr>
+
+      <h2>The Nmap Scripting Engine (NSE)</h2>
+      <p>NSE is one of Nmap's most powerful features. It allows Nmap to run Lua scripts that perform vulnerability detection, malware hunting, information gathering, and more.</p>
+
+      <h3>How NSE Works</h3>
+      <p>NSE scripts are organized into categories:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Purpose</th>
+            <th>Example Scripts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>safe</strong></td>
+            <td>Non-intrusive, won't crash services</td>
+            <td><code>banner</code>, <code>ssh-hostkey</code></td>
+          </tr>
+          <tr>
+            <td><strong>intrusive</strong></td>
+            <td>May crash services or trigger alerts</td>
+            <td><code>mysql-empty-password</code>, <code>ftp-anon</code></td>
+          </tr>
+          <tr>
+            <td><strong>vuln</strong></td>
+            <td>Check for specific vulnerabilities</td>
+            <td><code>smb-vuln-ms17-010</code>, <code>http-shellshock</code></td>
+          </tr>
+          <tr>
+            <td><strong>exploit</strong></td>
+            <td>Attempt to exploit vulnerabilities</td>
+            <td><code>ftp-vsftpd-backdoor</code></td>
+          </tr>
+          <tr>
+            <td><strong>auth</strong></td>
+            <td>Test authentication mechanisms</td>
+            <td><code>ssh-auth-methods</code>, <code>mysql-empty-password</code></td>
+          </tr>
+          <tr>
+            <td><strong>discovery</strong></td>
+            <td>Learn more about the target</td>
+            <td><code>snmp-sysdescr</code>, <code>dns-service-discovery</code></td>
+          </tr>
+          <tr>
+            <td><strong>dos</strong></td>
+            <td>May cause denial of service</td>
+            <td>Use with extreme caution</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Essential NSE Scripts</h3>
+
+<pre data-lang="bash"><code># Run all safe scripts
+nmap -sV --script=safe 192.168.56.20
+
+# Run vulnerability checks
+nmap -sV --script=vuln 192.168.56.20
+
+# Check for specific vulnerability (EternalBlue)
+nmap -sV --script=smb-vuln-ms17-010 192.168.56.20
+
+# Check for default or empty passwords
+nmap -sV --script=auth 192.168.56.20
+
+# Grab service banners
+nmap -sV --script=banner 192.168.56.20
+
+# Run a specific script
+nmap -sV --script=http-title 192.168.56.20
+
+# Run multiple scripts
+nmap -sV --script=http-title,ssh-hostkey,banner 192.168.56.20
+
+# List all available scripts
+ls /usr/share/nmap/scripts/ | less
+
+# Get script help
+nmap --script-help=smb-vuln-ms17-010</code></pre>
+
+      <h3>NSE Script Example: SMB Vulnerability Scan</h3>
+      <p>SMB (Server Message Block) is a common Windows file-sharing protocol with a history of critical vulnerabilities. Let's scan for them:</p>
+
+<pre data-lang="bash"><code># Scan for common SMB vulnerabilities
+nmap -p 445 --script=smb-vuln-ms17-010,smb-vuln-ms08-067,smb-os-discovery 192.168.56.20
+
+# Full SMB enumeration
+nmap -p 445 --script=smb-enum-shares,smb-enum-users,smb-os-discovery 192.168.56.20</code></pre>
+
+      <p><strong>What this reveals:</strong></p>
+      <ul>
+        <li>Whether the target is vulnerable to EternalBlue (MS17-010)</li>
+        <li>Whether the target is vulnerable to Conficker (MS08-067)</li>
+        <li>Windows version and domain information</li>
+        <li>Available network shares</li>
+        <li>User accounts (if accessible)</li>
+      </ul>
+
+      <div class="info-box warning-box">
+        <div class="info-box-title">⚠️ Script Safety</div>
+        <p>Always check a script's category before running it. Scripts marked <code>intrusive</code>, <code>exploit</code>, or <code>dos</code> can crash services or cause outages. In your lab, experiment freely. In production, only run <code>safe</code> scripts without explicit authorization.</p>
+      </div>
+
+      <hr>
+
+      <h2>Timing & Performance Tuning</h2>
+      <p>Nmap scans can be slow. Understanding timing options helps you balance speed against stealth and accuracy.</p>
+
+      <h3>Timing Templates (<code>-T0</code> to <code>-T5</code>)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Template</th>
+            <th>Name</th>
+            <th>Speed</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>-T0</code></td>
+            <td>Paranoid</td>
+            <td>One port every 5+ minutes</td>
+            <td>IDS evasion (extremely slow)</td>
+          </tr>
+          <tr>
+            <td><code>-T1</code></td>
+            <td>Sneaky</td>
+            <td>One port every 15 seconds</td>
+            <td>IDS evasion (very slow)</td>
+          </tr>
+          <tr>
+            <td><code>-T2</code></td>
+            <td>Polite</td>
+            <td>10x slower than default</td>
+            <td>Low bandwidth, avoid detection</td>
+          </tr>
+          <tr>
+            <td><code>-T3</code></td>
+            <td>Normal</td>
+            <td>Default speed</td>
+            <td>Standard scanning</td>
+          </tr>
+          <tr>
+            <td><code>-T4</code></td>
+            <td>Aggressive</td>
+            <td>Fast, assumes reliable network</td>
+            <td>Lab environments, CTFs</td>
+          </tr>
+          <tr>
+            <td><code>-T5</code></td>
+            <td>Insane</td>
+            <td>Very fast, may miss ports</td>
+            <td>Quick sweeps on local networks</td>
+          </tr>
+        </tbody>
+      </table>
+
+<pre data-lang="bash"><code># Aggressive scan for lab/CTF use
+nmap -T4 192.168.56.20
+
+# Polite scan to avoid overwhelming the target
+nmap -T2 192.168.56.20
+
+# Insane speed for quick host discovery
+nmap -T5 -sn 192.168.56.0/24</code></pre>
+
+      <h3>Other Performance Options</h3>
+
+<pre data-lang="bash"><code># Parallelism: scan more hosts/ports simultaneously
+nmap --min-parallelism 100 192.168.56.20
+
+# Host timeout: don't waste time on unresponsive hosts
+nmap --host-timeout 30s 192.168.56.0/24
+
+# Max retries: reduce retries for faster scans
+nmap --max-retries 1 192.168.56.20
+
+# Combine for fast CTF-style scanning
+nmap -T4 --max-retries 1 --host-timeout 30s -p- 192.168.56.20</code></pre>
+
+      <hr>
+
+      <h2>Output Formats: Saving Your Results</h2>
+      <p>Nmap supports multiple output formats. Saving results is critical for documentation, reporting, and comparison over time.</p>
+
+      <h3>Output Options</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Flag</th>
+            <th>Format</th>
+            <th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>-oN</code></td>
+            <td>Normal text</td>
+            <td>Human reading, quick notes</td>
+          </tr>
+          <tr>
+            <td><code>-oX</code></td>
+            <td>XML</td>
+            <td>Importing into tools (Metasploit, parsers)</td>
+          </tr>
+          <tr>
+            <td><code>-oG</code></td>
+            <td>Grepable</td>
+            <td>Scripting, grep, awk processing</td>
+          </tr>
+          <tr>
+            <td><code>-oA</code></td>
+            <td>All formats</td>
+            <td>Saves .nmap, .xml, and .gnmap at once</td>
+          </tr>
+        </tbody>
+      </table>
+
+<pre data-lang="bash"><code># Save in all formats
+nmap -sV -O 192.168.56.20 -oA scan-results
+
+# This creates:
+# scan-results.nmap  (human readable)
+# scan-results.xml   (machine readable)
+# scan-results.gnmap (grepable)
+
+# View normal output
+cat scan-results.nmap
+
+# Extract open ports from grepable output
+cat scan-results.gnmap | grep "Ports:"</code></pre>
+
+      <hr>
+
+      <h2>The Defender's Perspective: Detecting Nmap Scans</h2>
+      <p>Now that you know how Nmap works, let's flip the table. How do you <strong>detect</strong> when someone is scanning your network?</p>
+
+      <h3>1. IDS/IPS Signatures</h3>
+      <p>Intrusion Detection Systems like Snort and Suricata have built-in rules for detecting port scans:</p>
+      <ul>
+        <li><strong>Too many SYN packets</strong> to different ports from one source in a short time</li>
+        <li><strong>Incomplete handshakes</strong> (SYN without ACK) — signature of SYN scans</li>
+        <li><strong>Malformed packets</strong> (FIN, NULL, Xmas) — these are not normal traffic</li>
+        <li><strong>Sequential port probing</strong> — natural traffic is random; scans are ordered</li>
+      </ul>
+
+      <h3>2. Firewall Logs</h3>
+      <p>Even if a scan doesn't trigger an IDS alert, your firewall logs every dropped packet. A spike in blocked connection attempts from a single IP is a clear indicator.</p>
+
+      <h3>3. Honeypots</h3>
+      <p>Deploy fake services (honeypots) on your network. Any connection to them is suspicious by definition — no legitimate user should ever touch them. Tools like <strong>Cowrie</strong> (SSH honeypot) or <strong>T-Pot</strong> (multi-honeypot platform) can detect and analyze scanning behavior.</p>
+
+      <h3>4. Network Flow Analysis</h3>
+      <p>NetFlow or Zeek (formerly Bro) records metadata about all network connections. Analyzing flows reveals:</p>
+      <ul>
+        <li>A single source IP connecting to hundreds of destination ports</li>
+        <li>Short-duration connections (SYN scans complete in milliseconds)</li>
+        <li>Connections at unusual times or from unusual geographic locations</li>
+      </ul>
+
+      <h3>5. Host-Based Detection</h3>
+      <p>On the target machine itself:</p>
+      <ul>
+        <li><strong>Windows Event Logs</strong> — Security log records failed logins, but not port scans directly</li>
+        <li><strong>Sysmon</strong> — Can log network connections by process, helping identify scan responses</li>
+        <li><strong>TCPView / netstat</strong> — Show unusual connection patterns in real-time</li>
+      </ul>
+
+      <h3>Sample Snort Rule for SYN Scan Detection</h3>
+
+<pre data-lang="bash"><code># Detects multiple SYN packets without completing handshake
+alert tcp any any -> $HOME_NET any (msg:"NMAP SYN Scan Detected";
+    flags:S; threshold:type both, track by_src, count 20, seconds 60;
+    sid:1000001; rev:1;)</code></pre>
+
+      <p>This rule triggers when a single source sends 20+ SYN packets within 60 seconds — classic scan behavior.</p>
+
+      <h3>Evasion vs. Detection: The Arms Race</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Attacker Technique</th>
+            <th>Defender Counter</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fast scan (<code>-T5</code>)</td>
+            <td>Rate limiting, connection throttling</td>
+          </tr>
+          <tr>
+            <td>Slow scan (<code>-T0</code>)</td>
+            <td>Long-term flow analysis, anomaly detection</td>
+          </tr>
+          <tr>
+            <td>Fragmented packets (<code>-f</code>)</td>
+            <td>Reassembly at firewall/IDS, deep packet inspection</td>
+          </tr>
+          <tr>
+            <td>Decoy scans (<code>-D</code>)</td>
+            <td>Correlation analysis, geolocation filtering</td>
+          </tr>
+          <tr>
+            <td>Randomized order (<code>--randomize-hosts</code>)</td>
+            <td>Statistical analysis of connection patterns</td>
+          </tr>
+          <tr>
+            <td>Source port spoofing (<code>--source-port</code>)</td>
+            <td>Stateful firewall inspection, asymmetric routing detection</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Hands-On Exercise: Comprehensive Lab Scan</h2>
+      <p>Let's put everything together in your isolated lab. Ensure both Kali and Windows VMs are running on the <code>Lab-Network</code>.</p>
+
+      <h3>Exercise 1: Basic Discovery</h3>
+
+<pre data-lang="bash"><code># 1. Confirm target is online
+nmap -sn 192.168.56.20
+
+# 2. Default port scan
+nmap 192.168.56.20
+
+# 3. Save results
+nmap 192.168.56.20 -oA basic-scan
+
+# 4. Review the output
+cat basic-scan.nmap</code></pre>
+
+      <p><strong>Questions:</strong></p>
+      <ul>
+        <li>How many ports are open?</li>
+        <li>Which ports did you expect to see on a Windows machine?</li>
+        <li>Are there any unexpected open ports?</li>
+      </ul>
+
+      <h3>Exercise 2: Service & OS Detection</h3>
+
+<pre data-lang="bash"><code># 1. Version and OS detection
+sudo nmap -sS -sV -O 192.168.56.20 -oA detailed-scan
+
+# 2. Review service versions
+cat detailed-scan.nmap | grep -E "(PORT|open)"
+
+# 3. Check if any services are outdated
+# Compare versions against CVE databases (cve.mitre.org)</code></pre>
+
+      <p><strong>Questions:</strong></p>
+      <ul>
+        <li>What Windows version did Nmap guess?</li>
+        <li>How accurate was the OS fingerprint?</li>
+        <li>Are any service versions known to have vulnerabilities?</li>
+      </ul>
+
+      <h3>Exercise 3: NSE Vulnerability Scan</h3>
+
+<pre data-lang="bash"><code># 1. Run safe vulnerability checks
+nmap -sV --script=vuln 192.168.56.20 -oA vuln-scan
+
+# 2. Specifically check SMB
+nmap -p 445 --script=smb-vuln-ms17-010,smb-os-discovery 192.168.56.20
+
+# 3. Check for common misconfigurations
+nmap -sV --script=banner,http-title,ssh-hostkey 192.168.56.20</code></pre>
+
+      <p><strong>Questions:</strong></p>
+      <ul>
+        <li>Did any vulnerability scripts report findings?</li>
+        <li>What information do banners reveal?</li>
+        <li>Would an attacker find anything useful here?</li>
+      </ul>
+
+      <h3>Exercise 4: Compare Scan Types</h3>
+
+<pre data-lang="bash"><code># Time a connect scan
+time nmap -sT 192.168.56.20
+
+# Time a SYN scan
+time sudo nmap -sS 192.168.56.20
+
+# Time with aggressive timing
+time sudo nmap -sS -T4 192.168.56.20
+
+# Check Windows firewall logs after each scan
+# (Event Viewer → Windows Logs → Security)</code></pre>
+
+      <p><strong>Questions:</strong></p>
+      <ul>
+        <li>Which scan was fastest?</li>
+        <li>Did the Windows firewall log any of the scans?</li>
+        <li>How much difference did timing template make?</li>
+      </ul>
+
+      <h3>Exercise 5: Defensive Monitoring</h3>
+
+<pre data-lang="bash"><code># On Kali, install and start a simple listener
+sudo apt install netcat-traditional
+nc -lvp 4444
+
+# From another terminal, scan port 4444
+nmap -p 4444 192.168.56.10
+
+# Observe: does netcat show the connection attempt?
+# This simulates how a listening service sees scans</code></pre>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">🛡️ Defensive Takeaway</div>
+        <p>Every scan you performed generated network traffic that <em>could</em> have been logged and alerted on. As a defender, your job is to ensure those logs exist, the alerts fire, and the response playbook is ready. As an attacker, your job is to evade those controls. Understanding both sides makes you a better security professional.</p>
+      </div>
+
+      <hr>
+
+      <h2>Quick Reference: Essential Nmap Commands</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>What It Does</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>nmap -sn 192.168.56.0/24</code></td>
+            <td>Ping sweep — find live hosts</td>
+          </tr>
+          <tr>
+            <td><code>nmap 192.168.56.20</code></td>
+            <td>Default SYN scan of top 1000 ports</td>
+          </tr>
+          <tr>
+            <td><code>nmap -p- 192.168.56.20</code></td>
+            <td>Scan all 65535 TCP ports</td>
+          </tr>
+          <tr>
+            <td><code>nmap -sS 192.168.56.20</code></td>
+            <td>SYN stealth scan (requires root)</td>
+          </tr>
+          <tr>
+            <td><code>nmap -sT 192.168.56.20</code></td>
+            <td>TCP connect scan</td>
+          </tr>
+          <tr>
+            <td><code>nmap -sU --top-ports 100 192.168.56.20</code></td>
+            <td>UDP scan of top 100 ports</td>
+          </tr>
+          <tr>
+            <td><code>nmap -sV 192.168.56.20</code></td>
+            <td>Service version detection</td>
+          </tr>
+          <tr>
+            <td><code>nmap -O 192.168.56.20</code></td>
+            <td>Operating system detection</td>
+          </tr>
+          <tr>
+            <td><code>nmap -sV --script=vuln 192.168.56.20</code></td>
+            <td>Vulnerability scanning with NSE</td>
+          </tr>
+          <tr>
+            <td><code>nmap -A 192.168.56.20</code></td>
+            <td>Aggressive scan (OS + version + scripts + traceroute)</td>
+          </tr>
+          <tr>
+            <td><code>nmap -T4 192.168.56.20</code></td>
+            <td>Aggressive timing for faster scans</td>
+          </tr>
+          <tr>
+            <td><code>nmap -oA results 192.168.56.20</code></td>
+            <td>Save output in all formats</td>
+          </tr>
+          <tr>
+            <td><code>nmap -v 192.168.56.20</code></td>
+            <td>Verbose output — see scan progress</td>
+          </tr>
+          <tr>
+            <td><code>nmap -Pn 192.168.56.20</code></td>
+            <td>Skip host discovery, scan even if host doesn't respond to ping</td>
+          </tr>
+          <tr>
+            <td><code>nmap -sV -p 80 --script=http-title 192.168.56.20</code></td>
+            <td>Grab the title of a web page on port 80</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Summary: Attacker vs. Defender</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th>Attacker Uses Nmap To...</th>
+            <th>Defender Uses Nmap To...</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Discovery</strong></td>
+            <td>Map the network, find live hosts</td>
+            <td>Audit their own network for unauthorized devices</td>
+          </tr>
+          <tr>
+            <td><strong>Port Scanning</strong></td>
+            <td>Find open doors to exploit</td>
+            <td>Verify firewall rules are working as intended</td>
+          </tr>
+          <tr>
+            <td><strong>Version Detection</strong></td>
+            <td>Identify vulnerable software versions</td>
+            <td>Identify outdated software needing patches</td>
+          </tr>
+          <tr>
+            <td><strong>OS Detection</strong></td>
+            <td>Tailor exploits to the target OS</td>
+            <td>Identify rogue or unauthorized systems</td>
+          </tr>
+          <tr>
+            <td><strong>NSE Scripts</strong></td>
+            <td>Find vulnerabilities and misconfigurations</td>
+            <td>Proactively find and fix weaknesses</td>
+          </tr>
+          <tr>
+            <td><strong>Output</strong></td>
+            <td>Document findings for exploitation</td>
+            <td>Document baseline for change detection</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What's Next?</h2>
+      <p>In the next post, we'll explore <strong>"Social Engineering: The Human Vulnerability"</strong> — the most dangerous attack vector of all. No matter how secure your network is, one convincing phone call or email can bypass every technical control. We'll learn how attackers manipulate people, how to recognize manipulation attempts, and how organizations build resilience against psychological attacks.</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📬 Discussion Question</div>
+        <p>After running these scans in your lab, check your Windows Event Logs. How much of the scanning activity was logged? What gaps do you see in your ability to detect reconnaissance? Share your observations — understanding detection gaps is as important as understanding attack techniques.</p>
+      </div>
+
+    </article>
+
+    <!-- Series Navigation -->
+    <div class="series-nav" id="series">
+      <div class="series-title">📚 Beginner Series</div>
+      <ol class="series-list">
+        <li>
+          <a href="index.html">
+            <span>Setting Up Your First Cybersecurity Home Lab</span>
+            <span class="series-number">#1 ✓</span>
+          </a>
+        </li>
+        <li>
+          <a href="post-2-kill-chain.html">
+            <span>The Cyber Kill Chain: How Attacks Actually Happen</span>
+            <span class="series-number">#2 ✓</span>
+          </a>
+        </li>
+        <li>
+          <a href="post-3-reconnaissance.html">
+            <span>Passive Reconnaissance: What Attackers See</span>
+            <span class="series-number">#3 ✓</span>
+          </a>
+        </li>
+        <li>
+          <a href="post-4-nmap-scanning.html" class="series-current">
+            <span>Active Scanning with Nmap</span>
+            <span class="series-number">#4</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Social Engineering: The Human Vulnerability</span>
+            <span class="series-number">#5</span>
+          </a>
+        </li>
+      </ol>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">CyberSec From Scratch — Educational cybersecurity content.</p>
+      <p class="footer-text" style="margin-top: 0.5rem; font-size: 0.8rem;">Built with ❤️ on GitHub Pages.</p>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="#series">Series</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="#">RSS</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
