@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passive Reconnaissance: What Attackers See | CyberSec From Scratch</title>
+  <meta name="description" content="Learn how attackers gather intelligence without ever touching your systems — and how to minimize your digital footprint.">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">CyberSec From Scratch</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#series">Series</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="https://github.com/yourusername" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>CyberSec From Scratch</h1>
+      <p class="hero-subtitle">Understanding attacks to build better defenses.</p>
+      <div class="hero-tagline">Educational cybersecurity content for beginners and beyond.</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Post Header -->
+    <header class="post-header">
+      <h1 class="post-title">Passive Reconnaissance: What Attackers See</h1>
+      <div class="post-meta">
+        <span>📅 August 27, 2026</span>
+        <span>⏱️ 22 min read</span>
+        <span>🏷️ Beginner</span>
+        <span>👤 Your Name</span>
+      </div>
+      <div class="post-tags">
+        <span class="tag">#reconnaissance</span>
+        <span class="tag">#osint</span>
+        <span class="tag">#passive</span>
+        <span class="tag">#footprint</span>
+        <span class="tag">#cybersecurity</span>
+      </div>
+    </header>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <div class="disclaimer-title">⚠️ EDUCATIONAL DISCLAIMER</div>
+      <p>All techniques in this post are <strong>passive and non-intrusive</strong> — they use only publicly available information. These are the same methods attackers use in <strong>Stage 1 (Reconnaissance)</strong> of the Cyber Kill Chain. Understanding them is essential for defenders who want to reduce their organization's attack surface.</p>
+    </div>
+
+    <!-- Post Content -->
+    <article class="post-content">
+
+      <h2>What Is Passive Reconnaissance?</h2>
+      <p>Passive reconnaissance is the art of gathering information about a target <strong>without ever interacting with their systems directly</strong>. The target has no logs, no alerts, no idea it's happening.</p>
+
+      <p>Think of it like researching someone before a job interview — except the "interview" is a cyberattack, and the research reveals every weakness they forgot to hide.</p>
+
+      <p>Attackers use passive recon to answer critical questions before making a move:</p>
+      <ul>
+        <li>What domains and subdomains does the target own?</li>
+        <li>What technologies power their websites and servers?</li>
+        <li>Who works there, and what are their email formats?</li>
+        <li>What files and documents have been accidentally exposed?</li>
+        <li>What does their network look like from the outside?</li>
+      </ul>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📝 Key Distinction</div>
+        <p><strong>Passive</strong> = no packets sent to the target. You only query public databases, search engines, and archives.<br><strong>Active</strong> = direct interaction (port scans, ping sweeps, vulnerability probes). We'll cover active recon in Post #4.</p>
+      </div>
+
+      <h2>Why Passive Recon Is Invisible (and Dangerous)</h2>
+      <p>Because passive recon never touches the target's infrastructure, there is <strong>nothing to log, nothing to alert on, and nothing to block</strong>. The information is already public — the attacker is just collecting it.</p>
+
+      <p>This makes it the perfect starting point for any attack. By the time an attacker sends their first packet (active recon), they already know:</p>
+      <ul>
+        <li>Which employees to phish</li>
+        <li>Which technologies have known vulnerabilities</li>
+        <li>Which subdomains host admin panels or dev environments</li>
+        <li>Which cloud buckets might be misconfigured</li>
+      </ul>
+
+      <p>For defenders, the goal is simple: <strong>reduce what passive recon can find</strong>.</p>
+
+      <hr>
+
+      <h2>Technique 1: WHOIS & DNS Enumeration</h2>
+      <p>Every domain registration leaves a public record. WHOIS databases and DNS servers contain a goldmine of information.</p>
+
+      <h3>What You Can Learn</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Data Point</th>
+            <th>What It Reveals</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Registrar</strong></td>
+            <td>Where the domain was purchased</td>
+          </tr>
+          <tr>
+            <td><strong>Registration dates</strong></td>
+            <td>How old the domain is (older = more established)</td>
+          </tr>
+          <tr>
+            <td><strong>Name servers</strong></td>
+            <td>Which DNS provider they use (Cloudflare, Route53, etc.)</td>
+          </tr>
+          <tr>
+            <td><strong>MX records</strong></td>
+            <td>Which email provider they use (Google Workspace, Microsoft 365)</td>
+          </tr>
+          <tr>
+            <td><strong>SPF records</strong></td>
+            <td>Which IPs are authorized to send email for the domain</td>
+          </tr>
+          <tr>
+            <td><strong>Subdomains</strong></td>
+            <td>Dev environments, admin panels, APIs, staging sites</td>
+          </tr>
+          <tr>
+            <td><strong>Historical DNS</strong></td>
+            <td>IP addresses they've used in the past (may reveal infrastructure)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Tools for DNS Enumeration</h3>
+
+      <h4>1. dig (Built into Linux/macOS)</h4>
+
+<pre data-lang="bash"><code># Query A records (IPv4 addresses)
+dig example.com A
+
+# Query MX records (mail servers)
+dig example.com MX
+
+# Query TXT records (SPF, DKIM, verification tokens)
+dig example.com TXT
+
+# Query NS records (name servers)
+dig example.com NS
+
+# Query ALL records
+dig example.com ANY
+
+# Use a specific DNS server
+dig @8.8.8.8 example.com A</code></pre>
+
+      <h4>2. nslookup (Built into Windows)</h4>
+
+<pre data-lang="cmd"><code>nslookup example.com
+nslookup -type=MX example.com
+nslookup -type=TXT example.com</code></pre>
+
+      <h4>3. Online Tools</h4>
+      <ul>
+        <li><strong>ViewDNS.info</strong> — comprehensive DNS lookup, reverse IP, port scan history</li>
+        <li><strong>DNSDumpster</strong> — visual DNS map, subdomain discovery</li>
+        <li><strong>SecurityTrails</strong> — historical DNS data, domain research</li>
+      </ul>
+
+      <h3>Defensive Countermeasures</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Measure</th>
+            <th>How</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Private WHOIS</strong></td>
+            <td>Enable privacy protection at your registrar to hide contact details</td>
+          </tr>
+          <tr>
+            <td><strong>Minimal DNS exposure</strong></td>
+            <td>Don't list internal subdomains in public DNS; use split-horizon DNS</td>
+          </tr>
+          <tr>
+            <td><strong>Clean up old records</strong></td>
+            <td>Remove stale subdomains, dev environments, and test servers from DNS</td>
+          </tr>
+          <tr>
+            <td><strong>Monitor for new subdomains</strong></td>
+            <td>Alert when new DNS records appear (could indicate shadow IT or compromise)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Technique 2: Search Engine Dorking (Google Hacking)</h2>
+      <p>Google indexes everything — including things that should never be public. <strong>Google Dorks</strong> are advanced search operators that find sensitive files, exposed directories, login pages, and more.</p>
+
+      <h3>Common Dork Operators</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Operator</th>
+            <th>Function</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>site:</code></td>
+            <td>Restrict to a specific domain</td>
+            <td><code>site:example.com</code></td>
+          </tr>
+          <tr>
+            <td><code>filetype:</code></td>
+            <td>Search for specific file types</td>
+            <td><code>filetype:pdf site:example.com</code></td>
+          </tr>
+          <tr>
+            <td><code>inurl:</code></td>
+            <td>Search in URL</td>
+            <td><code>inurl:admin site:example.com</code></td>
+          </tr>
+          <tr>
+            <td><code>intitle:</code></td>
+            <td>Search in page title</td>
+            <td><code>intitle:"index of" site:example.com</code></td>
+          </tr>
+          <tr>
+            <td><code>intext:</code></td>
+            <td>Search in page body text</td>
+            <td><code>intext:"password" site:example.com</code></td>
+          </tr>
+          <tr>
+            <td><code>cache:</code></td>
+            <td>View Google's cached version</td>
+            <td><code>cache:example.com</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Dangerous Dorks (What Attackers Search For)</h3>
+
+      <div class="info-box warning-box">
+        <div class="info-box-title">⚠️ Only Search Your Own Domains</div>
+        <p>These dorks are powerful. Use them only on domains you own or have permission to test. Searching other people's systems without authorization may violate terms of service and local laws.</p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Dork</th>
+            <th>What It Finds</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>site:example.com filetype:pdf</code></td>
+            <td>All PDFs — may contain sensitive reports, proposals, or internal docs</td>
+          </tr>
+          <tr>
+            <td><code>site:example.com filetype:xls OR filetype:csv</code></td>
+            <td>Spreadsheets — potential customer lists, financial data</td>
+          </tr>
+          <tr>
+            <td><code>site:example.com intitle:"index of"</code></td>
+            <td>Open directory listings — exposed files without authentication</td>
+          </tr>
+          <tr>
+            <td><code>site:example.com inurl:login OR inurl:admin</code></td>
+            <td>Login pages — potential brute-force targets</td>
+          </tr>
+          <tr>
+            <td><code>site:example.com intext:"password" OR intext:"secret"</code></td>
+            <td>Pages containing sensitive keywords</td>
+          </tr>
+          <tr>
+            <td><code>site:example.com filetype:env OR filetype:config</code></td>
+            <td>Configuration files — may contain API keys, database credentials</td>
+          </tr>
+          <tr>
+            <td><code>site:example.com ext:sql</code></td>
+            <td>SQL dump files — potential database backups</td>
+          </tr>
+          <tr>
+            <td><code>site:example.com intitle:"phpinfo()"</code></td>
+            <td>Exposed PHP info pages — reveal server configuration</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Defensive Countermeasures</h3>
+      <ul>
+        <li><strong>Robots.txt + noindex</strong> — Prevent search engines from indexing sensitive directories (but don't rely on this alone — robots.txt is public)</li>
+        <li><strong>Authentication</strong> — Every admin panel, dev environment, and internal tool must require login</li>
+        <li><strong>File access controls</strong> — Don't store sensitive files in web-accessible directories</li>
+        <li><strong>Regular audits</strong> — Search your own domain with dorks monthly to find leaks</li>
+        <li><strong>Google Search Console</strong> — Use "Remove URLs" tool to de-index exposed content quickly</li>
+      </ul>
+
+      <hr>
+
+      <h2>Technique 3: Shodan & Censys — The Search Engine for Everything</h2>
+      <p>While Google indexes websites, <strong>Shodan</strong> and <strong>Censys</strong> index internet-connected devices: servers, routers, webcams, industrial control systems, databases, and more.</p>
+
+      <h3>What Shodan Reveals</h3>
+      <ul>
+        <li>Open ports and running services</li>
+        <li>Server software and versions (Apache 2.4.41, nginx 1.18.0)</li>
+        <li>SSL certificate details</li>
+        <li>Geographic location of servers</li>
+        <li>Default credentials still in use</li>
+        <li>IoT devices, cameras, printers exposed to the internet</li>
+      </ul>
+
+      <h3>Basic Shodan Queries</h3>
+
+<pre data-lang="bash"><code># Search by hostname
+hostname:example.com
+
+# Search by IP
+ip:192.168.1.1
+
+# Search for specific service
+apache
+
+# Search for specific version (vulnerable?)
+apache 2.4.49
+
+# Search for specific port
+port:3389  # RDP
+
+# Search for specific country
+country:US port:445  # SMB in the US
+
+# Search for default pages
+title:"Apache2 Ubuntu Default Page"</code></pre>
+
+      <h3>Censys — The Alternative</h3>
+      <p>Censys provides similar data with a focus on certificates and hosts. It's excellent for:</p>
+      <ul>
+        <li>Certificate transparency logs (discover subdomains from SSL certs)</li>
+        <li>IPv4 host scanning with service banners</li>
+        <li>Historical data on how a host has changed over time</li>
+      </ul>
+
+      <h3>Defensive Countermeasures</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Measure</th>
+            <th>How</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Firewall default-deny</strong></td>
+            <td>Only expose ports that absolutely must be public</td>
+          </tr>
+          <tr>
+            <td><strong>Change default banners</strong></td>
+            <td>Hide server versions in HTTP headers and service banners</td>
+          </tr>
+          <tr>
+            <td><strong>Monitor your exposure</strong></td>
+            <td>Create free Shodan/Censys accounts and set up alerts for your IPs</td>
+          </tr>
+          <tr>
+            <td><strong>VPN for management</strong></td>
+            <td>Never expose RDP, SSH, or admin panels directly to the internet</td>
+          </tr>
+          <tr>
+            <td><strong>Disable unnecessary services</strong></td>
+            <td>If you don't need it, don't run it — and certainly don't expose it</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Technique 4: OSINT on People (Social Engineering Prep)</h2>
+      <p>People are often the weakest link. Attackers research employees to craft convincing phishing emails, impersonation attacks, or pretexting phone calls.</p>
+
+      <h3>What Attackers Look For</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Intelligence Gathered</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>LinkedIn</strong></td>
+            <td>Job titles, reporting structure, technologies used, project names, email formats</td>
+          </tr>
+          <tr>
+            <td><strong>Company Website</strong></td>
+            <td>Team pages, press releases, job postings (reveal technologies and internal systems)</td>
+          </tr>
+          <tr>
+            <td><strong>GitHub</strong></td>
+            <td>Code repositories, commit history (may expose credentials, internal URLs, API keys)</td>
+          </tr>
+          <tr>
+            <td><strong>Pastebin / GitHub Gists</strong></td>
+            <td>Accidentally leaked code, config files, credentials</td>
+          </tr>
+          <tr>
+            <td><strong>Social Media</strong></td>
+            <td>Personal details for password guessing, security question answers, travel schedules</td>
+          </tr>
+          <tr>
+            <td><strong>Data Breach Databases</strong></td>
+            <td>Previously leaked credentials that may be reused (Have I Been Pwned)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Email Format Discovery</h3>
+      <p>Once an attacker knows one employee's email format, they can guess everyone's:</p>
+      <ul>
+        <li><code>firstname.lastname@company.com</code></li>
+        <li><code>flastname@company.com</code></li>
+        <li><code>firstinitiallastname@company.com</code></li>
+      </ul>
+
+      <p>Tools like <strong>theHarvester</strong> and <strong> Hunter.io</strong> automate this discovery.</p>
+
+      <h3>Defensive Countermeasures</h3>
+      <ul>
+        <li><strong>Limit public employee directories</strong> — Don't list full names, titles, and photos publicly</li>
+        <li><strong>Generic email formats</strong> — Avoid predictable patterns; use random IDs for public-facing addresses</li>
+        <li><strong>Job posting hygiene</strong> — Don't list specific internal technologies, software versions, or architecture details</li>
+        <li><strong>GitHub monitoring</strong> — Use tools like GitGuardian or TruffleHog to scan for leaked secrets</li>
+        <li><strong>Employee training</strong> — Teach staff what information is valuable to attackers and how to limit sharing</li>
+        <li><strong>Breach monitoring</strong> — Subscribe to Have I Been Pwned domain alerts to know when employee emails appear in breaches</li>
+      </ul>
+
+      <hr>
+
+      <h2>Technique 5: Wayback Machine & Cached Content</h2>
+      <p>The <strong>Internet Archive's Wayback Machine</strong> stores historical snapshots of websites. Attackers use it to see old versions of sites that may have exposed sensitive information before being cleaned up.</p>
+
+      <h3>What Attackers Find</h3>
+      <ul>
+        <li>Old admin panels or login pages that have since been moved</li>
+        <li>Deleted pages that contained technical details</li>
+        <li>Previous versions of the site with known vulnerabilities</li>
+        <li>Robots.txt files that revealed hidden directories</li>
+        <li>Exposed configuration files or backup pages</li>
+      </ul>
+
+      <h3>How to Use It (For Defense)</h3>
+
+<pre data-lang="bash"><code># Visit: https://web.archive.org/web/*/example.com
+# Browse historical snapshots
+# Look for pages that should not have been public</code></pre>
+
+      <h3>Defensive Countermeasures</h3>
+      <ul>
+        <li><strong>Request removal</strong> — Email archive.org to remove sensitive historical snapshots</li>
+        <li><strong>Think before publishing</strong> — Once something is on the internet, it may be archived forever</li>
+        <li><strong>Regular checks</strong> — Search your domain on Wayback Machine quarterly</li>
+      </ul>
+
+      <hr>
+
+      <h2>Technique 6: Certificate Transparency Logs</h2>
+      <p>Every time an organization requests an SSL/TLS certificate, it's logged in public <strong>Certificate Transparency (CT)</strong> logs. These logs reveal subdomains that might not appear in DNS.</p>
+
+      <h3>Tools for CT Log Enumeration</h3>
+      <ul>
+        <li><strong> crt.sh</strong> — Free web interface to search CT logs</li>
+        <li><strong>Censys</strong> — Certificate-based host discovery</li>
+        <li><strong>Certificate Transparency Monitoring</strong> — Facebook, Google, and Cloudflare offer monitoring tools</li>
+      </ul>
+
+      <h3>What Attackers Discover</h3>
+      <p>A certificate for <code>staging-api.example.com</code> might not have a public DNS record, but it exists in CT logs. Attackers now know there's a staging environment to probe.</p>
+
+      <h3>Defensive Countermeasures</h3>
+      <ul>
+        <li><strong>Monitor your own CT logs</strong> — Set up alerts for new certificates issued for your domain</li>
+        <li><strong>Use wildcard certificates</strong> — A single <code>*.example.com</code> cert doesn't reveal individual subdomains</li>
+        <li><strong>Protect staging environments</strong> — Even if discovered, staging should be behind VPN or IP allowlisting</li>
+      </ul>
+
+      <hr>
+
+      <h2>Hands-On Exercise: Audit Your Own Digital Footprint</h2>
+      <p>Let's put these techniques into practice — on your own systems or a test domain you control.</p>
+
+      <h3>Exercise 1: DNS Reconnaissance</h3>
+      <ol>
+        <li>Pick a domain you own (or use a test domain)</li>
+        <li>Run these commands from your Kali VM:</li>
+      </ol>
+
+<pre data-lang="bash"><code># Basic DNS lookup
+dig example.com ANY
+
+# MX records (email infrastructure)
+dig example.com MX
+
+# TXT records (SPF, DKIM, verification tokens)
+dig example.com TXT
+
+# Use DNSDumpster online for visual subdomain map
+# Visit: https://dnsdumpster.com</code></pre>
+
+      <p><strong>Questions to answer:</strong></p>
+      <ul>
+        <li>What name servers are you using?</li>
+        <li>Are there any subdomains you forgot about?</li>
+        <li>Does your SPF record reveal internal IP ranges?</li>
+        <li>Are there old TXT records with verification tokens still present?</li>
+      </ul>
+
+      <h3>Exercise 2: Google Dorking Self-Audit</h3>
+      <ol>
+        <li>Open Google in a private/incognito window</li>
+        <li>Search your domain with these dorks (replace <code>example.com</code>):</li>
+      </ol>
+
+<pre data-lang="bash"><code>site:example.com filetype:pdf
+site:example.com filetype:xls OR filetype:csv
+site:example.com intitle:"index of"
+site:example.com inurl:admin OR inurl:login
+site:example.com filetype:env OR filetype:config</code></pre>
+
+      <p><strong>Questions to answer:</strong></p>
+      <ul>
+        <li>Did you find any files that shouldn't be public?</li>
+        <li>Are there directory listings exposing file structures?</li>
+        <li>Are there old login pages or admin panels still accessible?</li>
+      </ul>
+
+      <h3>Exercise 3: Shodan Exposure Check</h3>
+      <ol>
+        <li>Create a free account at <a href="https://www.shodan.io" target="_blank">shodan.io</a></li>
+        <li>Search for your public IP address</li>
+        <li>Review what services and ports are visible</li>
+      </ol>
+
+      <p><strong>Questions to answer:</strong></p>
+      <ul>
+        <li>Are there any services exposed that you didn't know about?</li>
+        <li>Does Shodan show software versions that are outdated?</li>
+        <li>Are there any default pages or banners revealing too much?</li>
+      </ul>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">🛡️ Defensive Takeaway</div>
+        <p>The goal of this exercise is not to find vulnerabilities — it's to understand <strong>what an attacker can see without ever touching your systems</strong>. Every piece of information you reduce is one less tool in the attacker's arsenal.</p>
+      </div>
+
+      <hr>
+
+      <h2>Building a Passive Recon Defense Checklist</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Action</th>
+            <th>Frequency</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>WHOIS</strong></td>
+            <td>Enable privacy protection; verify contact info is current</td>
+            <td>Annually</td>
+          </tr>
+          <tr>
+            <td><strong>DNS</strong></td>
+            <td>Audit all records; remove stale entries; monitor for changes</td>
+            <td>Quarterly</td>
+          </tr>
+          <tr>
+            <td><strong>Google Dorks</strong></td>
+            <td>Search your domain with common dorks; remove exposed content</td>
+            <td>Monthly</td>
+          </tr>
+          <tr>
+            <td><strong>Shodan/Censys</strong></td>
+            <td>Search your IPs; set up exposure alerts; close unnecessary ports</td>
+            <td>Monthly</td>
+          </tr>
+          <tr>
+            <td><strong>CT Logs</strong></td>
+            <td>Monitor for new certificates; use wildcards where possible</td>
+            <td>Continuous (alerts)</td>
+          </tr>
+          <tr>
+            <td><strong>Wayback Machine</strong></td>
+            <td>Check historical snapshots; request removal of sensitive content</td>
+            <td>Quarterly</td>
+          </tr>
+          <tr>
+            <td><strong>GitHub/OSINT</strong></td>
+            <td>Scan for leaked credentials; monitor employee social media exposure</td>
+            <td>Monthly</td>
+          </tr>
+          <tr>
+            <td><strong>Data Breaches</strong></td>
+            <td>Subscribe to Have I Been Pwned domain alerts; force password resets</td>
+            <td>Continuous (alerts)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Summary: The Attacker's View vs. The Defender's View</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Technique</th>
+            <th>Attacker Sees...</th>
+            <th>Defender Should...</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DNS/WHOIS</strong></td>
+            <td>Infrastructure map, email provider, name servers</td>
+            <td>Minimize records, use privacy protection, clean stale entries</td>
+          </tr>
+          <tr>
+            <td><strong>Google Dorks</strong></td>
+            <td>Exposed files, directory listings, login pages</td>
+            <td>Regular self-audits, proper access controls, de-index leaks</td>
+          </tr>
+          <tr>
+            <td><strong>Shodan/Censys</strong></td>
+            <td>Open ports, service versions, exposed devices</td>
+            <td>Firewall hardening, version hiding, exposure monitoring</td>
+          </tr>
+          <tr>
+            <td><strong>OSINT on People</strong></td>
+            <td>Email formats, org chart, technologies, personal details</td>
+            <td>Limit public directories, train employees, monitor leaks</td>
+          </tr>
+          <tr>
+            <td><strong>Wayback Machine</strong></td>
+            <td>Old pages, deleted content, previous vulnerabilities</td>
+            <td>Request removals, think before publishing sensitive info</td>
+          </tr>
+          <tr>
+            <td><strong>CT Logs</strong></td>
+            <td>Hidden subdomains, certificate history</td>
+            <td>Use wildcards, monitor new certs, protect discovered assets</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What's Next?</h2>
+      <p>In the next post, we'll move from passive to <strong>active reconnaissance</strong> with <strong>"Active Scanning with Nmap"</strong> — the first time an attacker sends packets to your systems. We'll learn how to scan safely, interpret results, and most importantly, <strong>how to detect and respond to scans hitting your network</strong>.</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📬 Discussion Question</div>
+        <p>After auditing your own digital footprint, what surprised you most? Was there an exposed subdomain, an old file, or a service you forgot was public? Share your findings (sanitized, of course) — the community learns best from real examples.</p>
+      </div>
+
+    </article>
+
+    <!-- Series Navigation -->
+    <div class="series-nav" id="series">
+      <div class="series-title">📚 Beginner Series</div>
+      <ol class="series-list">
+        <li>
+          <a href="index.html">
+            <span>Setting Up Your First Cybersecurity Home Lab</span>
+            <span class="series-number">#1 ✓</span>
+          </a>
+        </li>
+        <li>
+          <a href="post-2-kill-chain.html">
+            <span>The Cyber Kill Chain: How Attacks Actually Happen</span>
+            <span class="series-number">#2 ✓</span>
+          </a>
+        </li>
+        <li>
+          <a href="post-3-reconnaissance.html" class="series-current">
+            <span>Passive Reconnaissance: What Attackers See</span>
+            <span class="series-number">#3</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Active Scanning with Nmap</span>
+            <span class="series-number">#4</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span>Social Engineering: The Human Vulnerability</span>
+            <span class="series-number">#5</span>
+          </a>
+        </li>
+      </ol>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">CyberSec From Scratch — Educational cybersecurity content.</p>
+      <p class="footer-text" style="margin-top: 0.5rem; font-size: 0.8rem;">Built with ❤️ on GitHub Pages.</p>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="#series">Series</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="#">RSS</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
