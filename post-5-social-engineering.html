@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Engineering: The Human Vulnerability | CyberSec From Scratch</title>
+  <meta name="description" content="Understand how attackers manipulate people through phishing, pretexting, and psychological tactics — and how organizations build human resilience.">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">CyberSec From Scratch</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#series">Series</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="https://github.com/yourusername" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <h1>CyberSec From Scratch</h1>
+      <p class="hero-subtitle">Understanding attacks to build better defenses.</p>
+      <div class="hero-tagline">Educational cybersecurity content for beginners and beyond.</div>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <header class="post-header">
+      <h1 class="post-title">Social Engineering: The Human Vulnerability</h1>
+      <div class="post-meta">
+        <span>📅 September 10, 2026</span>
+        <span>⏱️ 26 min read</span>
+        <span>🏷️ Beginner</span>
+        <span>👤 Your Name</span>
+      </div>
+      <div class="post-tags">
+        <span class="tag">#social-engineering</span>
+        <span class="tag">#phishing</span>
+        <span class="tag">#awareness</span>
+        <span class="tag">#human-factor</span>
+        <span class="tag">#cybersecurity</span>
+      </div>
+    </header>
+
+    <div class="disclaimer">
+      <div class="disclaimer-title">⚠️ EDUCATIONAL DISCLAIMER</div>
+      <p>Social engineering techniques are discussed for <strong>defensive and awareness purposes only</strong>. Simulated phishing and social engineering tests must only be conducted with explicit organizational authorization and proper safeguards. Never manipulate or deceive individuals without informed consent.</p>
+    </div>
+
+    <article class="post-content">
+
+      <h2>The Weakest Link</h2>
+      <p>You can deploy the most expensive firewall, the most advanced EDR, and the strictest zero-trust architecture. But if an attacker convinces one employee to click a link, enter a password, or open a door, all of that technology becomes irrelevant.</p>
+
+      <p><strong>Social engineering</strong> is the art of manipulating people into breaking normal security procedures. It exploits human psychology — not software vulnerabilities. And it's responsible for <strong>over 90% of successful cyberattacks</strong> according to industry reports.</p>
+
+      <p>In this post, we'll dissect how social engineering works, why it's so effective, and how individuals and organizations can build resilience against it.</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📝 Key Context</div>
+        <p>Social engineering sits at <strong>Stage 1 (Reconnaissance)</strong> and <strong>Stage 3 (Delivery)</strong> of the Cyber Kill Chain. The attacker first researches the victim (passive recon), then crafts a believable pretext, and finally delivers the payload through a human interaction rather than a technical exploit.</p>
+      </div>
+
+      <h2>The Psychology Behind Manipulation</h2>
+      <p>Social engineers don't rely on technical skill — they rely on understanding how humans think. Robert Cialdini's research on influence identified six core principles that attackers exploit:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Principle</th>
+            <th>How Attackers Exploit It</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Authority</strong></td>
+            <td>People obey figures of authority without question</td>
+            <td>Email from "CEO" demanding urgent wire transfer</td>
+          </tr>
+          <tr>
+            <td><strong>Urgency / Scarcity</strong></td>
+            <td>Time pressure bypasses rational thinking</td>
+            <td>"Your account will be suspended in 1 hour — click now"</td>
+          </tr>
+          <tr>
+            <td><strong>Social Proof</strong></td>
+            <td>People follow what others are doing</td>
+            <td>"500 employees have already updated their passwords"</td>
+          </tr>
+          <tr>
+            <td><strong>Reciprocity</strong></td>
+            <td>People feel obligated to return favors</td>
+            <td>Free USB drive or gift in exchange for "filling out a survey"</td>
+          </tr>
+          <tr>
+            <td><strong>Liking / Similarity</strong></td>
+            <td>People trust those they like or who seem similar</td>
+            <td>Attacker pretends to share alma mater, hobbies, or connections</td>
+          </tr>
+          <tr>
+            <td><strong>Commitment / Consistency</strong></td>
+            <td>People want to act consistently with prior commitments</td>
+            <td>"You requested this password reset — confirm it's you"</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Attackers rarely use just one principle. A convincing phishing email might combine <strong>authority</strong> (IT department), <strong>urgency</strong> (account suspension), and <strong>social proof</strong> (other employees complied) into a single message.</p>
+
+      <hr>
+
+      <h2>The Six Types of Social Engineering</h2>
+
+      <h3>1. Phishing</h3>
+      <p>The most common form. Mass emails sent to thousands of recipients, impersonating trusted entities (banks, social media, IT departments) to steal credentials or deliver malware.</p>
+
+      <h4>Phishing Variants</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Spear Phishing</strong></td>
+            <td>Highly targeted at specific individuals or roles</td>
+            <td>Email to CFO from "auditor" requesting financial documents</td>
+          </tr>
+          <tr>
+            <td><strong>Whaling</strong></td>
+            <td>Targeting C-suite executives</td>
+            <td>Fake board meeting invitation to CEO with malware attachment</td>
+          </tr>
+          <tr>
+            <td><strong>Clone Phishing</strong></td>
+            <td>Copy of a legitimate email with malicious replacement</td>
+            <td>Resending a real invoice with infected PDF attached</td>
+          </tr>
+          <tr>
+            <td><strong>Vishing</strong></td>
+            <td>Phishing via voice call</td>
+            <td>Caller impersonates bank fraud department</td>
+          </tr>
+          <tr>
+            <td><strong>Smishing</strong></td>
+            <td>Phishing via SMS/text</td>
+            <td>Fake package delivery notification with malicious link</td>
+          </tr>
+          <tr>
+            <td><strong>Angler Phishing</strong></td>
+            <td>Fake customer support on social media</td>
+            <td>Attacker replies to complaint tweet with fake support account</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>2. Pretexting</h3>
+      <p>Creating a fabricated scenario (pretext) to obtain information. The attacker invents a believable story and plays a role.</p>
+
+      <p><strong>Examples:</strong></p>
+      <ul>
+        <li>Caller claims to be from IT support, needs password to "fix an issue"</li>
+        <li>Attacker poses as journalist requesting a quote, building rapport for later exploitation</li>
+        <li>Fake vendor calls to "verify account details" before a supposed shipment</li>
+      </ul>
+
+      <h3>3. Baiting</h3>
+      <p>Offering something enticing to trick the victim into compromising security.</p>
+
+      <p><strong>Examples:</strong></p>
+      <ul>
+        <li>USB drives labeled "Confidential — Salary Info" left in parking lots</li>
+        <li>Free software download that installs malware</li>
+        <li>Fake lottery win or prize notification</li>
+      </ul>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">💡 Real Case: The USB Drop Test</div>
+        <p>Researchers at the University of Illinois dropped 297 USB drives around campus. <strong>48% were plugged in</strong> by finders. Some drives had files that auto-executed (simulating malware), while others simply phoned home when opened. The lesson: curiosity is a powerful attack vector.</p>
+      </div>
+
+      <h3>4. Quid Pro Quo</h3>
+      <p>Offering a service or benefit in exchange for information or access.</p>
+
+      <p><strong>Examples:</strong></p>
+      <ul>
+        <li>"I'll fix your computer issue if you give me remote access"</li>
+        <li>Free tech support call that results in installing "diagnostic software" (actually malware)</li>
+        <li>Surveys offering gift cards in exchange for "security questions"</li>
+      </ul>
+
+      <h3>5. Tailgating / Piggybacking</h3>
+      <p>Physically following someone into a restricted area without authorization.</p>
+
+      <p><strong>Examples:</strong></p>
+      <ul>
+        <li>Attacker carries a large box, hoping someone holds the door open</li>
+        <li>Dressed as delivery driver or maintenance worker to blend in</li>
+        <li>"I forgot my badge — can you let me in?"</li>
+      </ul>
+
+      <h3>6. Watering Hole Attacks</h3>
+      <p>Compromising a website that the target group frequently visits, then waiting for them to visit and get infected.</p>
+
+      <p><strong>Examples:</strong></p>
+      <ul>
+        <li>Compromising an industry news site frequented by defense contractors</li>
+        <li>Injecting malicious JavaScript into a local restaurant's online ordering page near a target office</li>
+      </ul>
+
+      <hr>
+
+      <h2>Anatomy of a Phishing Email</h2>
+      <p>Let's dissect what makes a phishing email effective. Understanding the anatomy helps you spot them.</p>
+
+      <h3>Red Flags to Watch For</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Legitimate Email</th>
+            <th>Phishing Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sender Address</strong></td>
+            <td><code>support@amazon.com</code></td>
+            <td><code>support@amazon-security.com</code> or spoofed display name</td>
+          </tr>
+          <tr>
+            <td><strong>Greeting</strong></td>
+            <td>Uses your actual name</td>
+            <td>"Dear Customer" or "Dear User"</td>
+          </tr>
+          <tr>
+            <td><strong>Urgency</strong></td>
+            <td>Standard timeline, no pressure</td>
+            <td>"Act now," "Immediate action required," "Account suspended"</td>
+          </tr>
+          <tr>
+            <td><strong>Links</strong></td>
+            <td>Hover shows real domain</td>
+            <td>Hover shows suspicious domain or URL shortener</td>
+          </tr>
+          <tr>
+            <td><strong>Attachments</strong></td>
+            <td>Expected file types, scanned</td>
+            <td>Unexpected .exe, .zip, .docm, or password-protected archives</td>
+          </tr>
+          <tr>
+            <td><strong>Grammar</strong></td>
+            <td>Professional, proofread</td>
+            <td>Spelling errors, awkward phrasing, odd formatting</td>
+          </tr>
+          <tr>
+            <td><strong>Signature</strong></td>
+            <td>Full contact info, consistent branding</td>
+            <td>Generic or missing signature, wrong logos</td>
+          </tr>
+          <tr>
+            <td><strong>Request</strong></td>
+            <td>Standard business process</td>
+            <td>Unusual request: wire transfer, password reset, "verify" credentials</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Inspect a Suspicious Link</h3>
+      <p>Never click a suspicious link. Instead:</p>
+      <ol>
+        <li><strong>Hover (don't click)</strong> — the real URL appears in your browser's status bar or as a tooltip</li>
+        <li><strong>Check the domain</strong> — <code>amazon.com</code> is legitimate; <code>amazon-security-update.com</code> is not</li>
+        <li><strong>Look for HTTPS</strong> — but remember, HTTPS only means the connection is encrypted, not that the site is legitimate</li>
+        <li><strong>Use a URL expander</strong> — for shortened links (bit.ly, t.co), use <code>urlscan.io</code> or <code>expandurl.net</code></li>
+        <li><strong>Navigate manually</strong> — type the known legitimate URL directly rather than clicking the link</li>
+      </ol>
+
+      <hr>
+
+      <h2>Real-World Case Studies</h2>
+
+      <h3>Case Study 1: The Twitter Bitcoin Scam (2020)</h3>
+      <p>Attackers used <strong>vishing</strong> (voice phishing) to convince Twitter employees they were IT support. The attackers had researched employees via LinkedIn and knew internal tools and terminology. They directed employees to a fake VPN login page, captured credentials, and gained access to Twitter's internal admin tools. The result: compromised accounts of Barack Obama, Elon Musk, Bill Gates, and others tweeting a Bitcoin scam.</p>
+
+      <p><strong>Lessons:</strong></p>
+      <ul>
+        <li>Even tech-savvy employees at major companies can be socially engineered</li>
+        <li>Internal tools should require MFA, not just passwords</li>
+        <li>Employee verification procedures for "IT support" calls are critical</li>
+      </ul>
+
+      <h3>Case Study 2: The Target Breach (2013)</h3>
+      <p>Attackers didn't target Target directly. They sent a <strong>spear-phishing email</strong> to an HVAC vendor that had network access to Target's systems. The vendor's employee clicked the link, infecting their system. From there, the attackers moved laterally into Target's payment network and stole 40 million credit card numbers.</p>
+
+      <p><strong>Lessons:</strong></p>
+      <ul>
+        <li>Your security is only as strong as your weakest vendor</li>
+        <li>Third-party access should be isolated and monitored</li>
+        <li>Supply chain attacks are social engineering at scale</li>
+      </ul>
+
+      <h3>Case Study 3: The RSA SecurID Breach (2011)</h3>
+      <p>Attackers sent two different <strong>spear-phishing emails</strong> to small groups of RSA employees over three days. The emails had the subject line "2011 Recruitment Plan" and contained an Excel file exploiting a zero-day vulnerability. One employee retrieved it from their spam folder and opened it. The result: compromise of RSA's SecurID two-factor authentication product, affecting thousands of corporate customers.</p>
+
+      <p><strong>Lessons:</strong></p>
+      <ul>
+        <li>Even security companies get phished</li>
+        <li>Zero-day exploits in documents bypass most technical controls</li>
+        <li>Email security must include attachment sandboxing, not just link filtering</li>
+      </ul>
+
+      <hr>
+
+      <h2>Technical Defenses: Email Security Controls</h2>
+      <p>While humans are the target, technology can filter out most attacks before they reach inboxes.</p>
+
+      <h3>SPF, DKIM, and DMARC</h3>
+      <p>These three email authentication protocols work together to prevent email spoofing:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Protocol</th>
+            <th>What It Does</th>
+            <th>How It Protects</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>SPF</strong><br>(Sender Policy Framework)</td>
+            <td>Specifies which IP addresses are authorized to send email for your domain</td>
+            <td>Prevents attackers from sending email that appears to come from your domain</td>
+          </tr>
+          <tr>
+            <td><strong>DKIM</strong><br>(DomainKeys Identified Mail)</td>
+            <td>Cryptographically signs outgoing emails with a private key</td>
+            <td>Verifies email hasn't been altered in transit; confirms sender domain</td>
+          </tr>
+          <tr>
+            <td><strong>DMARC</strong><br>(Domain-based Message Authentication)</td>
+            <td>Tells receivers what to do if SPF or DKIM fail; provides reporting</td>
+            <td>Quarantines or rejects spoofed emails; sends failure reports to domain owner</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to Check a Domain's Email Security</h3>
+
+<pre data-lang="bash"><code># Check SPF record
+dig TXT example.com | grep "v=spf1"
+
+# Check DKIM record (requires knowing the selector, often 'default' or 'google')
+dig TXT default._domainkey.example.com
+
+# Check DMARC record
+dig TXT _dmarc.example.com
+
+# Online tool: https://mxtoolbox.com/SuperTool.aspx</code></pre>
+
+      <h3>Email Gateway Features</h3>
+      <ul>
+        <li><strong>URL rewriting and sandboxing</strong> — Links are rewritten to pass through a security proxy first</li>
+        <li><strong>Attachment detonation</strong> — Attachments are opened in a sandbox to observe behavior before delivery</li>
+        <li><strong>Machine learning analysis</strong> — Natural language processing detects phishing language patterns</li>
+        <li><strong>Impersonation protection</strong> — Detects display name spoofing (e.g., "CEO" from @gmail.com)</li>
+        <li><strong>External sender banners</strong> — Visual warning when email originates outside the organization</li>
+      </ul>
+
+      <hr>
+
+      <h2>Building a Security Awareness Program</h2>
+      <p>Technology filters the easy attacks. The sophisticated ones still reach inboxes. This is where security awareness becomes critical.</p>
+
+      <h3>Effective Awareness Training Principles</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Principle</th>
+            <th>Implementation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Regular, not annual</strong></td>
+            <td>Short monthly modules beat one yearly marathon. Attention spans are short; reinforcement is key.</td>
+          </tr>
+          <tr>
+            <td><strong>Practical, not theoretical</strong></td>
+            <td>Show real examples from your industry. Generic stock photos of hackers don't resonate.</td>
+          </tr>
+          <tr>
+            <td><strong>Positive, not punitive</strong></td>
+            <td>Reward reporting, don't punish falling for tests. Fear creates silence, not security.</td>
+          </tr>
+          <tr>
+            <td><strong>Role-based</strong></td>
+            <td>Finance staff need different training than developers. Tailor scenarios to actual risks.</td>
+          </tr>
+          <tr>
+            <td><strong>Simulated phishing</strong></td>
+            <td>Regular, realistic tests with immediate just-in-time training for those who fail</td>
+          </tr>
+          <tr>
+            <td><strong>Easy reporting</strong></td>
+            <td>One-click "Report Phishing" button in email clients. Make reporting easier than ignoring.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Phishing Simulation Best Practices</h3>
+      <p>Many organizations use simulated phishing to test and train employees. Done wrong, it damages trust. Done right, it builds resilience.</p>
+
+      <div class="info-box warning-box">
+        <div class="info-box-title">⚠️ Ethics of Phishing Simulations</div>
+        <p>Never use fear, shame, or fake emergencies in simulations. No "you're fired" emails, no fake disciplinary actions, no COVID-19 health warnings. The goal is education, not trauma. Always inform employees that simulations are occurring and provide immediate, constructive feedback.</p>
+      </div>
+
+      <p><strong>Good simulation topics:</strong></p>
+      <ul>
+        <li>Password reset request from "IT"</li>
+        <li>Package delivery notification</li>
+        <li>Shared document notification (Google Drive, SharePoint style)</li>
+        <li>Newsletter signup confirmation</li>
+      </ul>
+
+      <p><strong>Never use:</strong></p>
+      <ul>
+        <li>Health or safety warnings</li>
+        <li>Salary, bonus, or disciplinary topics</li>
+        <li>Anything that causes genuine fear or distress</li>
+      </ul>
+
+      <hr>
+
+      <h2>Individual Defense: How to Protect Yourself</h2>
+      <p>Whether you're an employee, student, or individual, these habits will protect you:</p>
+
+      <h3>The SLOW Method</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Letter</th>
+            <th>Action</th>
+            <th>Question to Ask</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>S</strong> — Stop</td>
+            <td>Pause before acting</td>
+            <td>"Am I being rushed?" Urgency is a red flag.</td>
+          </tr>
+          <tr>
+            <td><strong>L</strong> — Look</td>
+            <td>Inspect the details</td>
+            <td>"Does the sender address match? Are there spelling errors?"</td>
+          </tr>
+          <tr>
+            <td><strong>O</strong> — Observe</td>
+            <td>Check for manipulation tactics</td>
+            <td>"Is this using authority, urgency, or fear to pressure me?"</td>
+          </tr>
+          <tr>
+            <td><strong>W</strong> — Wait</td>
+            <td>Verify through another channel</td>
+            <td>"Can I call the sender at a known number to confirm?"</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Additional Personal Habits</h3>
+      <ul>
+        <li><strong>Use a password manager</strong> — It won't auto-fill on fake login pages, providing an instant warning</li>
+        <li><strong>Enable MFA everywhere</strong> — Even if credentials are stolen, MFA blocks most attacks</li>
+        <li><strong>Never give passwords over phone or email</strong> — No legitimate organization will ever ask for this</li>
+        <li><strong>Verify unexpected requests</strong> — Call the person back at a known number, not one from the email</li>
+        <li><strong>Be skeptical of "too good to be true"</strong> — Free gifts, unexpected prizes, and urgent warnings are all tactics</li>
+      </ul>
+
+      <hr>
+
+      <h2>Hands-On Exercise: Spot the Phish</h2>
+      <p>Let's practice identifying phishing attempts. For each scenario, identify the red flags.</p>
+
+      <h3>Scenario 1: The Urgent Invoice</h3>
+      <div class="info-box note-box">
+        <div class="info-box-title">📧 Email</div>
+        <p><strong>From:</strong> accounts@acme-invoice-portal.com<br>
+        <strong>To:</strong> you@company.com<br>
+        <strong>Subject:</strong> URGENT: Unpaid Invoice #8921 — Legal Action Pending<br>
+        <strong>Body:</strong> "Dear Valued Customer, Our records indicate an unpaid invoice of $4,500. Legal proceedings will begin in 24 hours unless payment is made immediately. Click here to pay now and avoid penalties."<br>
+        <strong>Link:</strong> http://acme-pay-now.secure-portal.xyz/invoice/8921</p>
+      </div>
+
+      <p><strong>Red flags:</strong></p>
+      <ul>
+        <li>Sender domain doesn't match company domain (<code>acme-invoice-portal.com</code> vs <code>acme.com</code>)</li>
+        <li>Urgency and threat of legal action — pressure tactic</li>
+        <li>Generic greeting ("Valued Customer")</li>
+        <li>Suspicious link domain (<code>secure-portal.xyz</code>)</li>
+        <li>No invoice details or reference numbers you'd recognize</li>
+      </ul>
+
+      <h3>Scenario 2: The IT Support Call</h3>
+      <div class="info-box note-box">
+        <div class="info-box-title">📞 Phone Call</div>
+        <p>"Hi, this is Mike from IT support. We've detected suspicious activity on your account. I need to verify your identity before we lock it down. Can you confirm your employee ID and the password you used to log in this morning? I need to check if it was compromised."</p>
+      </div>
+
+      <p><strong>Red flags:</strong></p>
+      <ul>
+        <li>IT will never ask for your password — ever</li>
+        <li>Caller ID can be spoofed; "Mike from IT" is unverifiable</li>
+        <li>Creating urgency ("before we lock it down") to bypass thinking</li>
+        <li>Requesting sensitive info over the phone</li>
+      </ul>
+
+      <h3>Scenario 3: The USB in the Parking Lot</h3>
+      <div class="info-box note-box">
+        <div class="info-box-title">💾 Physical Find</div>
+        <p>You find a USB drive in the company parking lot labeled "Q4 Financial Results — Confidential."</p>
+      </div>
+
+      <p><strong>Red flags:</strong></p>
+      <ul>
+        <li>Unknown USB drives should never be plugged into company systems</li>
+        <li>The label is designed to trigger curiosity and authority (financial data)</li>
+        <li>Even "checking what's on it" on a personal laptop risks infection</li>
+        <li>Proper procedure: hand to IT security, never insert</li>
+      </ul>
+
+      <div class="info-box tip-box">
+        <div class="info-box-title">🛡️ Defensive Takeaway</div>
+        <p>Social engineering succeeds because it feels right in the moment. The SLOW method forces a pause — and that pause is often enough for rational thinking to catch up. Train yourself to automatically pause when you see urgency, authority, or unexpected requests.</p>
+      </div>
+
+      <hr>
+
+      <h2>Summary: Building Human Resilience</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Control</th>
+            <th>Effectiveness</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Technical</strong></td>
+            <td>SPF, DKIM, DMARC, email gateways, sandboxing, MFA</td>
+            <td>Blocks 95%+ of automated and basic attacks</td>
+          </tr>
+          <tr>
+            <td><strong>Procedural</strong></td>
+            <td>Verification procedures, approval workflows, clean desk policy</td>
+            <td>Prevents business email compromise and unauthorized access</td>
+          </tr>
+          <tr>
+            <td><strong>Educational</strong></td>
+            <td>Security awareness training, phishing simulations, reporting culture</td>
+            <td>Catches the sophisticated attacks that bypass technology</td>
+          </tr>
+          <tr>
+            <td><strong>Cultural</strong></td>
+            <td>No-blame reporting, security champions, executive buy-in</td>
+            <td>Creates an environment where security is everyone's responsibility</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What's Next?</h2>
+      <p>In the next post, we'll shift from the human layer to the <strong>software layer</strong> with <strong>"Malware Analysis 101: Understanding the Threat."</strong> We'll explore how malware works, how to analyze suspicious files safely, and how defenders extract intelligence (IOCs) from malware to protect their networks.</p>
+
+      <div class="info-box note-box">
+        <div class="info-box-title">📬 Discussion Question</div>
+        <p>Have you ever encountered a social engineering attempt — phishing email, suspicious call, or physical intrusion? What red flags did you notice (or wish you'd noticed)? Real stories are the best teachers.</p>
+      </div>
+
+    </article>
+
+    <div class="series-nav" id="series">
+      <div class="series-title">📚 Beginner Series</div>
+      <ol class="series-list">
+        <li><a href="index.html"><span>Setting Up Your First Cybersecurity Home Lab</span><span class="series-number">#1 ✓</span></a></li>
+        <li><a href="post-2-kill-chain.html"><span>The Cyber Kill Chain</span><span class="series-number">#2 ✓</span></a></li>
+        <li><a href="post-3-reconnaissance.html"><span>Passive Reconnaissance</span><span class="series-number">#3 ✓</span></a></li>
+        <li><a href="post-4-nmap-scanning.html"><span>Active Scanning with Nmap</span><span class="series-number">#4 ✓</span></a></li>
+        <li><a href="post-5-social-engineering.html" class="series-current"><span>Social Engineering: The Human Vulnerability</span><span class="series-number">#5</span></a></li>
+        <li><a href="#"><span>Malware Analysis 101: Understanding the Threat</span><span class="series-number">#6</span></a></li>
+      </ol>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">CyberSec From Scratch — Educational cybersecurity content.</p>
+      <p class="footer-text" style="margin-top: 0.5rem; font-size: 0.8rem;">Built with ❤️ on GitHub Pages.</p>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="#series">Series</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="#">RSS</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
